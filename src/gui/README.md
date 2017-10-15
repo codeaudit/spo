@@ -856,7 +856,7 @@ result:
 ]
 ```
 
-## Coin supply informations
+## Token supply informations
 
 ```bash
 URI: /coinSupply
