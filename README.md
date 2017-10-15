@@ -4,11 +4,11 @@
 [![GoDoc](https://godoc.org/github.com/spaco/spo?status.svg)](https://godoc.org/github.com/spaco/spo)
 [![Go Report Card](https://goreportcard.com/badge/github.com/spaco/spo)](https://goreportcard.com/report/github.com/spaco/spo)
 
-Spo is a next-generation cryptocurrency.
+Spo is a next-generation tokens build on Spaco network.
 
-Skycoin improves on Bitcoin in too many ways to be addressed here.
+Spaco improves on HTTP/HTTPS in too many ways to be addressed here.
 
-Skycoin is small part of OP Redecentralize and OP Darknet Plan.
+Spaco is small part of OP Redecentralize and OP next-generation net Plan.
 
 ## Links
 
