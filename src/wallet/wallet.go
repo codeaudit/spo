@@ -89,7 +89,7 @@ func NewWallet(wltName string, opts ...Option) (*Wallet, error) {
 			"lastSeed": seed,
 			"tm":       fmt.Sprintf("%v", time.Now().Unix()),
 			"type":     "deterministic",
-			"coin":     string(CoinTypeSkycoin),
+			"coin":     string(CoinTypeSpo),
 		},
 	}
 

@@ -1,12 +1,12 @@
 {
-    "name": "skycoin",
-    "productName": "Skycoin",
-    "author": "skycoin",
+    "name": "spo",
+    "productName": "Spo",
+    "author": "spo",
     "main": "src/electron-main.js",
     "version": "0.20.2",
-    "description": "skycoin wallet",
+    "description": "spo wallet",
     "build": {
-        "appId": "org.skycoin.skycoin",
+        "appId": "io.spaco.spo",
         "nsis": {
             "oneClick": false,
             "allowToChangeInstallationDirectory": true
@@ -47,11 +47,11 @@
                 "to": "./app/dist/",
                 "filter": [
                     "**/*",
-                    "!current-skycoin.json"
+                    "!current-spo.json"
                 ]
             },
             {
-                "from": "./skycoin/",
+                "from": "./spo/",
                 "to": "./app/dist/"
             }
         ],

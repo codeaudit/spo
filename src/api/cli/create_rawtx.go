@@ -460,7 +460,7 @@ func getSufficientUnspents(unspents []UnspentOut, coins uint64) ([]UnspentOut, e
 	return nil, errors.New("balance in wallet is not sufficient")
 }
 
-// NewTransaction create skycoin transaction.
+// NewTransaction create spo transaction.
 func NewTransaction(utxos []UnspentOut, keys []cipher.SecKey, outs []coin.TransactionOutput) (*coin.Transaction, error) {
 	tx := coin.Transaction{}
 	for _, u := range utxos {

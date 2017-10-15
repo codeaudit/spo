@@ -1,6 +1,6 @@
 # Webrpc
 
-This is a description about skycoin webrpc, which implemented the [json-rpc 2.0](http://www.jsonrpc.org/specification) protocol.
+This is a description about spo webrpc, which implemented the [json-rpc 2.0](http://www.jsonrpc.org/specification) protocol.
 The rpc service entry point is /webrpc, and only accept the HTTP `POST` requests.
 
 ## Get Status

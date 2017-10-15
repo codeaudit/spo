@@ -28,7 +28,7 @@ The CLI uses environment variable to manage the configurations.
 
 ### RPC_ADDR
 
-CLI will connect to skycoin node rpc address:`127.0.0.1:8630` by default,
+CLI will connect to spo node rpc address:`127.0.0.1:8630` by default,
 you can change the address by setting the `RPC_ADDR` env variable
 with the following command:
 
@@ -85,8 +85,8 @@ COMMANDS:
      lastBlocks            Displays the content of the most recently N generated blocks
      listAddresses         Lists all addresses in a given wallet
      listWallets           Lists all wallets stored in the default wallet directory
-     send                  Send skycoin from a wallet or an address to a recipient address
-     status                Check the status of current skycoin node
+     send                  Send spo from a wallet or an address to a recipient address
+     status                Check the status of current spo node
      transaction           Show detail info of specific transaction
      version
      walletDir             Displays wallet folder address

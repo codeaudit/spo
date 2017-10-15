@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleExecutable</key>
-    <string>Skycoin</string>
+    <string>Spo</string>
     <key>CFBundleIdentifier</key>
-    <string>org.skycoin.Skycoin</string>
+    <string>io.spaco.spo</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>Skycoin</string>
+    <string>Spo</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>LSMinimumSystemVersion</key>
@@ -26,10 +26,10 @@
     <array>
       <dict>
         <key>CFBundleURLName</key>
-        <string>Skycoin</string>
+        <string>Spo</string>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>skycoin</string>
+          <string>spo</string>
         </array>
       </dict>
     </array>

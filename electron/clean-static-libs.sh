@@ -5,4 +5,4 @@
 
 rm ${GOPATH}/pkg/*/github.com/spaco/spo/src/*.a
 rm ${GOPATH}/pkg/*/github.com/spaco/spo/src/lib/*.a
-rm ${GOPATH}/pkg/*/github.com/skycoin/*.a
+rm ${GOPATH}/pkg/*/github.com/spaco/*.a

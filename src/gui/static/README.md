@@ -36,6 +36,6 @@ You can route all calls to this address by changing the url property on the ApiS
 
 Please note that at the moment the Purchase API (teller) is both offline and not supporting CORS headers.
 
-While event.skycoin.net is not working, we will have to run the purchase API locally.
+While event.spaco.io is not working, we will have to run the purchase API locally.
 
 Similar as the solution for the above CORS issue, you can circumvent CORS issues by changing the url property to '/teller/'

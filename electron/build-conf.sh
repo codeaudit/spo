@@ -3,7 +3,7 @@ set -e -o pipefail
 
 # These values are also in package.json and must be equal
 
-# Get skycoin build version from package.json
+# Get spo build version from package.json
 APP_VERSION=`grep version package.json | sed  's/[,\", ]//g'| awk '{split($0,a,":");print a[2]}'`
 
 
@@ -39,7 +39,7 @@ STL_OUTPUT=".standalone_output"
 
 FINAL_OUTPUT="release"
 
-VERSION_FILE="./skycoin/current-skycoin.json"
+VERSION_FILE="./spo/current-spo.json"
 
 GUI_DIST_DIR="../src/gui/static/dist"  # Do not append "/" to this path
 

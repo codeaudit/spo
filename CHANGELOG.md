@@ -59,8 +59,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - All API and CLI methods with "coin"-related arguments must be a string and
   can use decimal notation to specify coin amounts.
 - CLI's `walletHistory` command prints amounts as fixed-point decimal strings.
-  Previously, it printed amounts as integers representing whole skycoin amounts,
-  and did not support droplets / fractional skycoins.
+  Previously, it printed amounts as integers representing whole spo amounts,
+  and did not support droplets / fractional spos.
 - A user is prevented from broadcasting a new transaction with unspent outputs
   that they have already sent as an unconfirmed transaction.
 
@@ -110,7 +110,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - #421 Sort wallet transaction history by time
 - #398 Remove seeds from DOM
 - #390 Make `go test ./src/...` work
-- #383 Error during installation from skycoin source code
+- #383 Error during installation from spo source code
 - #375 Node can't recovery from zero connections
 - #376 Explorer api `/explorer/address` does not return spend transactions
 - #373 Master node will be closed if there're no transactions need to execute
