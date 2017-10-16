@@ -147,7 +147,7 @@ result:
 ```json
 {
     "meta": {
-        "coin": "sky",
+        "coin": "SPO",
         "filename": "2017_05_09_d554.wlt",
         "label": "",
         "lastSeed": "4795eaf6890c0ce1d67daf87d2f85523b1d19245a7a81a38c757fc4a7e3cae3e",
