@@ -221,3 +221,7 @@ For example, `v0.20.0` becomes `v0.20.1`, for minor fixes.
 ## Changelog
 
 [CHANGELOG.md](CHANGELOG.md)
+
+## Acknowledgement
+
+Thank Skycoin team especially Synth and Steve! Thank you for your support！
