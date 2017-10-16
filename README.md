@@ -4,18 +4,18 @@
 [![GoDoc](https://godoc.org/github.com/spaco/spo?status.svg)](https://godoc.org/github.com/spaco/spo)
 [![Go Report Card](https://goreportcard.com/badge/github.com/spaco/spo)](https://goreportcard.com/report/github.com/spaco/spo)
 
-Spo is a next-generation tokens build on Spaco network.
+SPO is a next-generation tokens build on SPACO network.
 
-Spaco improves on HTTP/HTTPS in too many ways to be addressed here.
+SPACO network improves on HTTP/HTTPS in too many ways to be addressed here.
 
-Spaco is small part of OP Redecentralize and OP next-generation net Plan.
+SPACO is small part of OP Redecentralize and OP next-generation net Plan.
 
 ## Links
 
-* [skycoin.net](https://www.skycoin.net)
-* [Skycoin Blog](https://blog.skycoin.net)
-* [Skycoin Blockchain Explorer](https://explorer.skycoin.net)
-* [Skycoin Distribution Event](https://event.skycoin.net)
+* [spaco.io](https://www.spaco.io)
+* [Spaco Blog](https://blog.spaco.io)
+* [Spaco Blockchain Explorer](https://explorer.spaco.io)
+* [Spaco Distribution Event](https://event.spaco.io)
 
 ## Table of Contents
 
@@ -23,14 +23,14 @@ Spaco is small part of OP Redecentralize and OP next-generation net Plan.
 
 - [Installation](#installation)
     - [Go 1.9+ Installation and Setup](#go-19-installation-and-setup)
-    - [Go get skycoin](#go-get-skycoin)
-    - [Run Skycoin from the command line](#run-skycoin-from-the-command-line)
-    - [Show Skycoin node options](#show-skycoin-node-options)
-    - [Run Skycoin with options](#run-skycoin-with-options)
+    - [Go get SPACO](#go-get-SPACO)
+    - [Run SPACO from the command line](#run-SPACO-from-the-command-line)
+    - [Show SPACO node options](#show-SPACO-node-options)
+    - [Run SPACO with options](#run-SPACO-with-options)
 - [API Documentation](#api-documentation)
     - [Wallet REST API](#wallet-rest-api)
     - [JSON-RPC 2.0 API](#json-rpc-20-api)
-    - [Skycoin command line interface](#skycoin-command-line-interface)
+    - [SPACO command line interface](#SPACO-command-line-interface)
 - [Development](#development)
     - [Modules](#modules)
     - [Running Tests](#running-tests)
@@ -49,7 +49,7 @@ Spaco is small part of OP Redecentralize and OP next-generation net Plan.
 
 [Golang 1.9+ Installation/Setup](./Installation.md)
 
-### Go get skycoin
+### Go get SPACO
 
 ```sh
 go get https://github.com/spaco/spo/...
@@ -60,21 +60,21 @@ This will download `github.com/spaco/spo` to `$GOPATH/src/github.com/spaco/spo`.
 You can also clone the repo directly with `git clone https://github.com/spaco/spo`,
 but it must be cloned to this path: `$GOPATH/src/github.com/spaco/spo`.
 
-### Run Skycoin from the command line
+### Run SPACO from the command line
 
 ```sh
 cd $GOPATH/src/github.com/spaco/spo
 make run
 ```
 
-### Show Skycoin node options
+### Show SPACO node options
 
 ```sh
 cd $GOPATH/src/github.com/spaco/spo
 make run-help
 ```
 
-### Run Skycoin with options
+### Run SPACO with options
 
 ```sh
 cd $GOPATH/src/github.com/spaco/spo
@@ -91,7 +91,7 @@ make ARGS="--launch-browser=false" run
 
 [JSON-RPC 2.0 README](src/api/webrpc/README.md).
 
-### Skycoin command line interface
+### SPACO command line interface
 
 [CLI command API](cmd/cli/README.md).
 
