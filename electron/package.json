@@ -1,10 +1,10 @@
 {
     "name": "spo",
-    "productName": "Spo",
-    "author": "spo",
+    "productName": "Spaco",
+    "author": "spaco team",
     "main": "src/electron-main.js",
     "version": "0.20.2",
-    "description": "spo wallet",
+    "description": "Spaco wallet",
     "build": {
         "appId": "io.spaco.spo",
         "nsis": {

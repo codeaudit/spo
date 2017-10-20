@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Http } from '@angular/http';
+import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class PurchaseService {
@@ -11,15 +12,23 @@ export class PurchaseService {
   private purchaseUrl: string = 'http://127.0.01:7071/api/';
   // private purchaseUrl: string = '/teller/';
 
+  private purchaseTokenTypes: Subject<TokenModel[]> = new BehaviorSubject<TokenModel[]>([]);
+  
+  //buy types
+  //private purchaseTokenTypes :Subject<any[]> = new BehaviorSubject<any[]>([]);
+
   constructor(
     private http: Http,
   ) {
     this.retrievePurchaseOrders();
+    this.retrievePurchaseTokenTypes();
   }
 
   all() {
     return this.purchaseOrders.asObservable();
   }
+
+
 
   generate(address: string) {
     return this.post('bind', { skyaddr: address })
@@ -59,6 +68,19 @@ export class PurchaseService {
       });
     });
   }
+  
+  alltokens(): Observable<TokenModel[]> {
+    return this.purchaseTokenTypes.asObservable();
+  }
+
+  getSupportedTokens() {
+    return this.get('tokens.php').do(response=>{
+        this.purchaseTokenTypes.first().subscribe(tokens=> {
+            this.updateTokenTypes(tokens)
+        });
+    });    
+  }
+    
 
   private get(url) {
     return this.http.get(this.purchaseUrl + url)
@@ -77,8 +99,21 @@ export class PurchaseService {
     }
   }
 
+  private retrievePurchaseTokenTypes() {
+    const tokenTypes = JSON.parse(window.localStorage.getItem('purchaseTokenTypes'));
+    if(tokenTypes) {
+      this.purchaseTokenTypes.next(tokenTypes);
+    }
+
+  }
+
   private updatePurchaseOrders(collection: any[]) {
     this.purchaseOrders.next(collection);
     window.localStorage.setItem('purchaseOrders', JSON.stringify(collection));
+  }
+
+  private updateTokenTypes(collection: any[]) {
+    this.purchaseTokenTypes.next(collection);
+    window.localStorage.setItem('purchaseTokenTypes', JSON.stringify(collection));
   }
 }

@@ -60,7 +60,7 @@ const ROUTES = [
     path: 'send',
     component: SendSkycoinComponent,
     data: {
-      breadcrumb: 'Send Skycoin',
+      breadcrumb: 'Send Spo',
     },
   },
   {
@@ -119,7 +119,7 @@ const ROUTES = [
     path: 'buy',
     component: BuyComponent,
     data: {
-      breadcrumb: 'Buy Skycoin',
+      breadcrumb: 'Buy Spo',
     },
   },
   {

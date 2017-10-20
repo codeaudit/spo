@@ -199,6 +199,19 @@ func BitcoinAddressFromPubkey(pubkey PubKey) string {
 	// }
 }
 
+func SpoAddressFromPubKey(pubkey PubKey) string {
+	b1 := SumSHA256(pubkey[:])
+	b2 := HashRipemd160(b1[:])
+	b3 := append([]byte{byte(0)}, b2[:]...)
+	b4 := DoubleSHA256(b3)
+	b5 := append(b3, b4[0:4]...)
+	return string(base58.Hex2Base58(b5))
+	// return Address{
+	// 	Version: 0,
+	// 	Key:     b2,
+	// }
+}
+
 // BitcoinWalletImportFormatFromSeckey exports seckey in wallet import format
 // key must be compressed
 func BitcoinWalletImportFormatFromSeckey(seckey SecKey) string {

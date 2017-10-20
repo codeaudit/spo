@@ -37,8 +37,14 @@ export class BuyComponent {
     });
   }
 
+  load() {
+    this.purchaseService.getSupportedTokens();
+  }
   private disableScanning()
   {
     setTimeout(() => this.scanning = false, 1000);
+  }
+  ngOnInit(): void {
+    
   }
 }

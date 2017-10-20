@@ -110,13 +110,11 @@ spo.stderr.on('data', (data) => {
 });
 
 spo.on('close', (code) => {
-    // log.info('Skycoin closed');
     console.log('Spo closed');
   reset();
 });
 
 spo.on('exit', (code) => {
-    // log.info('Skycoin exited');
     console.log('Spo exited');
   reset();
 });
@@ -166,9 +164,9 @@ function createWindow(url) {
 
   // create application's main menu
   var template = [{
-    label: "Spo",
+    label: "Spaco",
     submenu: [
-      { label: "About Spo", selector: "orderFrontStandardAboutPanel:" },
+      { label: "About Spaco", selector: "orderFrontStandardAboutPanel:" },
       { type: "separator" },
       { label: "Quit", accelerator: "Command+Q", click: function() { app.quit(); } }
     ]

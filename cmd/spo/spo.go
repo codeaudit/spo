@@ -51,16 +51,16 @@ var (
 	}
 
 	// GenesisSignatureStr hex string of genesis signature
-	GenesisSignatureStr = "306c1966db8cdee60c1abd8f0071a087a81f50b12d25d13c79d68094fba61eab05625b40538d3b45777bf2aba988ba753f6d884fb0d308cfab95382556d80e8300"
+	GenesisSignatureStr = "f454586ff77074ffe0bc5949831577745522f6852e2b183cf42076077ee96eb74d6ecb3d94a156d3da4b85fea977a45cd3b1ef0610c226bac1d619fa90504ddf00"
 	// GenesisAddressStr genesis address string
-	GenesisAddressStr = "VKP5zTkBW8cri3fDucJbxoo1rAjZSsUQmd"
+	GenesisAddressStr = "47YHfeSspQp6Ap8MHi9rZHWCtFp7kszzYu"
 	// BlockchainPubkeyStr pubic key string
-	BlockchainPubkeyStr = "02ad9663a232901ec0cbfa827dcccd5a79a3bc733d10c685c4b10ac1fde7dde8e6"
+	BlockchainPubkeyStr = "027d047d6e5546ab1dfff0c73a3a74eff354cbb0f1a14461113834c10663331305"
 	// BlockchainSeckeyStr empty private key string
 	BlockchainSeckeyStr = ""
 
 	// GenesisTimestamp genesis block create unix time
-	GenesisTimestamp uint64 = 1426562704
+	GenesisTimestamp uint64 = 1502217329
 	// GenesisCoinVolume represents the coin capacity
 	GenesisCoinVolume uint64 = 2800e12
 

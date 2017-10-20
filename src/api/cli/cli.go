@@ -27,7 +27,7 @@ const (
 	defaultCoin       = "spo"
 	defaultWalletName = "$COIN_cli" + walletExt
 	defaultWalletDir  = "$HOME/.$COIN/wallets"
-	defaultRpcAddress = "127.0.0.1:8686"
+	defaultRpcAddress = "127.0.0.1:8630"
 )
 
 var (

@@ -1,16 +1,33 @@
 <p *ngIf="!otcEnabled">Sorry, otc has currently been disabled!</p>
 <md-card *ngIf="otcEnabled">
-  <md-card-title>Purchase Skycoin</md-card-title>
+  <md-card-title>Purchase Spo</md-card-title>
   <md-card class="skycoin-details">
-    You can buy Spaco Tokens directly from your wallet using our Spaco Token Teller service. The current rate is 0.0002 BTC per
-    SPO. To buy SPO, request a BTC deposit address. Once you have a BTC deposit address, any BTC deposits will
-    automatically be added to your selected address.
+    You can buy Spaco Tokens directly from your wallet using our Spaco Token Teller service.
   </md-card>
+  <md-card class="skycoin-details">   
+  The current rate is 0.0002 BTC per
+  SPO. To buy SPO, request a BTC deposit address. Once you have a BTC deposit address, any BTC deposits will
+  automatically be added to your selected address.
+  <button md-icon-button (click)="searchDepositAddress(address.address)" [disabled]="scanning">
+    <md-icon>refresh</md-icon>
+  </button>
+</md-card>
+<md-expansion-panel *ngFor="let token of purchaseService.alltokens() | async">
+  <md-expansion-panel-header>
+    <md-panel-title>
+      {{ token.label }}
+    </md-panel-title>
+    <md-panel-description>
+      <span>{{ token.token }}</span> <span>{{ token.description }} </span>
+    </md-panel-description>
+  </md-expansion-panel-header>
+</md-expansion-panel>
+
 
   <md-list>
     <ng-container *ngFor="let address of (purchaseService.all() | async); let i = index">
       <md-divider *ngIf="i"></md-divider>
-      <h3 md-subheader>Spo address: {{ address.address }}</h3>
+      <h3 md-subheader>Spaco address: {{ address.address }}</h3>
       <md-list-item *ngFor="let btc of address.addresses">
         <h4 md-line> Bitcoin address: {{ btc.btc }}</h4>
         <p md-line> Status: {{ btc.status | tellerStatus }} (updated at: {{ btc.updated | dateTime }}) </p>
@@ -24,3 +41,8 @@
 <div class="button-line" *ngIf="otcEnabled">
   <a md-raised-button color="primary" (click)="addDepositAddress()">Add deposit address</a>
 </div>
+
+<div class="button-line" *ngIf="otcEnabled">
+  <a md-raised-button color="primary" (click)="load()">load()</a>
+</div>
+
