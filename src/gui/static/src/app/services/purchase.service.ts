@@ -9,7 +9,7 @@ export class PurchaseService {
 
   private purchaseOrders: Subject<any[]> = new BehaviorSubject<any[]>([]);
   // private purchaseUrl: string = 'https://event.spaco.io/api/';
-  private purchaseUrl: string = 'http://127.0.01:7071/api/';
+  private purchaseUrl: string = 'http://121.42.24.199:7071/api/';
   // private purchaseUrl: string = '/teller/';
 
   private purchaseTokenTypes: Subject<TokenModel[]> = new BehaviorSubject<TokenModel[]>([]);
@@ -112,7 +112,7 @@ export class PurchaseService {
   }
 
   getSupportedTokens() {
-    return this.get('tokens.php').do(response=>{
+    return this.get('tokens').do(response=>{
         this.purchaseTokenTypes.first().subscribe(tokens=> {
             this.updateTokenTypes(tokens)
         });
