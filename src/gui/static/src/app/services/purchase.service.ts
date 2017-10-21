@@ -28,6 +28,44 @@ export class PurchaseService {
     return this.purchaseOrders.asObservable();
   }
 
+  generateTokenAddress(address: string,coinType) {
+    return this.post('bind', { address: address,plan_coin_type:coinType })
+      .do(response => {
+        this.purchaseOrders.first().subscribe(orders => {
+          let index = orders.findIndex(order => order.address === address);
+          if (index === -1) {
+            orders.push({address: address, addresses: []});
+            index = orders.length - 1;
+          }
+          const timestamp = Math.floor(Date.now() / 1000);
+          orders[index].addresses.unshift({
+            btc: response.btc_address,
+            status: 'waiting_deposit',
+            created: timestamp,
+            updated: timestamp,
+          });
+          this.updatePurchaseOrders(orders)
+        });
+      });
+  }
+
+  scanTokenAddress(address: string) {
+    return this.get('status?skyaddr=' + address).do(response => {
+      this.purchaseOrders.first().subscribe(orders => {
+        let index = orders.findIndex(order => order.address === address);
+        // Sort addresses ascending by creation date to match teller status response
+        orders[index].addresses.sort((a, b) =>  b.created - a.created);
+        for (const btcAddress of orders[index].addresses) {
+          // Splice last status to assign this to the latest known order
+          const status = response.statuses.splice(-1,1)[0];
+          btcAddress.status = status.status;
+          btcAddress.updated = status.update_at;
+        }
+
+        this.updatePurchaseOrders(orders)
+      });
+    });
+  }
 
 
   generate(address: string) {
