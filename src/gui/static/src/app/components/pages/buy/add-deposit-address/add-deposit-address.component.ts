@@ -13,6 +13,7 @@ export class AddDepositAddressComponent implements OnInit {
 
   form: FormGroup;
   tokenType: string;
+  loading: Boolean = false;
   constructor(
     public walletService: WalletService,
     private dialogRef: MdDialogRef<AddDepositAddressComponent>,
@@ -25,7 +26,14 @@ export class AddDepositAddressComponent implements OnInit {
   }
 
   generate() {
-    this.purchaseService.generate(this.form.value.address, this.tokenType).subscribe(() => this.dialogRef.close());
+    this.loading = true;
+    this.purchaseService.generate(this.form.value.address, this.tokenType).subscribe(() => {
+      this.dialogRef.close();
+    }, (err)=>{
+      alert(err);  
+    }, ()=>{
+      this.loading = false;
+    });
   }
 
   private initForm() {
