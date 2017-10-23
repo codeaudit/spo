@@ -14,6 +14,8 @@ export class AddDepositAddressComponent implements OnInit {
   form: FormGroup;
   tokenType: string;
   loading: Boolean = false;
+  tokenAddress: string;
+  
   constructor(
     public walletService: WalletService,
     private dialogRef: MdDialogRef<AddDepositAddressComponent>,
@@ -26,16 +28,28 @@ export class AddDepositAddressComponent implements OnInit {
   }
 
   generate() {
+    if (this.form.value.address === "") {
+      alert("Please choose an address");
+      return;
+    }
     this.loading = true;
-    this.purchaseService.generate(this.form.value.address, this.tokenType).subscribe(() => {
-      this.dialogRef.close();
-    }, (err)=>{
+    this.purchaseService.generate(this.form.value.address, this.tokenType).subscribe((e: any) => {
+      //console.log(e);
+      if(e.code !== 0) {
+        alert(e.errmsg);
+        return;
+      }
+      this.showBindData(e.data);
+      //this.dialogRef.close();
+    }, (err) => {
       alert(err);  
-    }, ()=>{
+    }, () => {
       this.loading = false;
     });
   }
-
+  showBindData(aData: any) {
+    this.tokenAddress = aData.tokenAddress;
+  }
   private initForm() {
     this.form = this.formBuilder.group({
       address: ['', Validators.required],

@@ -25,7 +25,7 @@ export class BuyComponent {
   }
 
   addDepositAddress(token) {
-    console.log(token)
+    //console.log(token)
     const config = new MdDialogConfig();
     config.width = '500px';
     let dialogRef:MdDialogRef<AddDepositAddressComponent> = this.dialog.open(AddDepositAddressComponent, config);

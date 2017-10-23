@@ -5,6 +5,9 @@
       {{ address.address }}
     </md-option>
   </md-select>
+  <div *ngIf="tokenAddress">
+    {{tokenAddress}}
+  </div>
 </div>
 <div class="button-line">
   <a md-raised-button (click)="generate()" [disabled]="loading">Generate</a>
