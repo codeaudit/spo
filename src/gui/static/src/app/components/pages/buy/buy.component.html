@@ -29,7 +29,7 @@
 </md-card>
 
 <ol>
-  <li ng-repeat="dir in ['north', 'south', 'east', 'west']">
+  <li *ngFor="let dir of ['north', 'south', 'east', 'west']">
   {{dir}}
   </li>
   </ol>
