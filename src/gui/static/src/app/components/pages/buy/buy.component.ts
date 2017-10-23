@@ -14,15 +14,17 @@ export class BuyComponent {
   orders = [];
   otcEnabled: boolean;
   scanning = false;
+  supportedTokens = [];
 
   constructor(
     public purchaseService: PurchaseService,
     private dialog: MdDialog,
   ) {
     this.otcEnabled = config.otcEnabled;
+    this.load();
   }
 
-  addDepositAddress() {
+  addDepositAddress(token) {
     const config = new MdDialogConfig();
     config.width = '500px';
     this.dialog.open(AddDepositAddressComponent, config);
@@ -38,8 +40,21 @@ export class BuyComponent {
   }
 
   load() {
-    this.purchaseService.getSupportedTokens();
+    //this.purchaseService.getSupportedTokens();
+    this.getSupportedTokens();
   }
+  
+  getSupportedTokens(){
+    this.purchaseService.getSupportedTokens().subscribe(result => {
+      //console.log(result);
+      if (result.code != 0) {
+        alert(result.errmsg);
+        return;
+      }
+      this.supportedTokens = result.data;        
+    })    
+  }
+  
   private disableScanning()
   {
     setTimeout(() => this.scanning = false, 1000);

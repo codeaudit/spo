@@ -2,27 +2,37 @@
 <md-card *ngIf="otcEnabled">
   <md-card-title>Purchase Spo</md-card-title>
   <md-card class="skycoin-details">
-   sss You can buy Spaco Tokens directly from your wallet using our Spaco Token Teller service.
+    You can buy Spaco Tokens directly from your wallet using our Spaco Token Teller service.
   </md-card>
-  <md-card class="skycoin-details">   
-  The current rate is 0.0002 BTC per
-  SPO. To buy SPO, request a BTC deposit address. Once you have a BTC deposit address, any BTC deposits will
-  automatically be added to your selected address.
-  <button md-icon-button (click)="searchDepositAddress(address.address)" [disabled]="scanning">
-    <md-icon>refresh</md-icon>
-  </button>
+  <md-card>   
+    <div style="display:none">
+      The current rate is 0.0002 BTC per
+      SPO. To buy SPO, request a BTC deposit address. Once you have a BTC deposit address, any BTC deposits will
+      automatically be added to your selected address.
+      <button md-icon-button (click)="searchDepositAddress(address.address)" [disabled]="scanning">
+        <md-icon>refresh</md-icon>
+      </button>
+    </div>
+  <md-list>
+    <md-list-item *ngFor="let item of supportedTokens">
+      <div class="spo-buy-typelist">
+        <div class="spo-buy-typelist-content">
+          <label>{{item.label}}</label>
+          <p>{{item.description}}</p>
+        </div>
+        <div class="spo-buy-typelist-btnbox">
+          <a md-raised-button color="primary" (click)="addDepositAddress(item.token)">Deposit</a>
+        </div>
+      </div>
+    </md-list-item>
+  </md-list>  
 </md-card>
-<md-expansion-panel *ngFor="let token of purchaseService.alltokens() | async">
-  <md-expansion-panel-header>
-    <md-panel-title>
-      {{ token.label }}
-    </md-panel-title>
-    <md-panel-description>
-      <span>{{ token.token }}</span> <span>{{ token.description }} </span>
-    </md-panel-description>
-  </md-expansion-panel-header>
-</md-expansion-panel>
 
+<ol>
+  <li ng-repeat="dir in ['north', 'south', 'east', 'west']">
+  {{dir}}
+  </li>
+  </ol>
 
   <md-list>
     <ng-container *ngFor="let address of (purchaseService.all() | async); let i = index">
@@ -38,11 +48,9 @@
     </ng-container>
   </md-list>
 </md-card>
-<div class="button-line" *ngIf="otcEnabled">
-  <a md-raised-button color="primary" (click)="addDepositAddress()">Add deposit address</a>
-</div>
 
 <div class="button-line" *ngIf="otcEnabled">
-  <a md-raised-button color="primary" (click)="load()">load()</a>
 </div>
+
+
 
