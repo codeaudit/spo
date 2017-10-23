@@ -12,7 +12,7 @@ import { MdDialogRef } from '@angular/material';
 export class AddDepositAddressComponent implements OnInit {
 
   form: FormGroup;
-
+  tokenType: string;
   constructor(
     public walletService: WalletService,
     private dialogRef: MdDialogRef<AddDepositAddressComponent>,
@@ -25,7 +25,7 @@ export class AddDepositAddressComponent implements OnInit {
   }
 
   generate() {
-    this.purchaseService.generate(this.form.value.address).subscribe(() => this.dialogRef.close());
+    this.purchaseService.generate(this.form.value.address, this.tokenType).subscribe(() => this.dialogRef.close());
   }
 
   private initForm() {

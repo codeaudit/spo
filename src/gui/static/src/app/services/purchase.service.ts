@@ -68,8 +68,8 @@ export class PurchaseService {
   }
 
 
-  generate(address: string) {
-    return this.post('bind', { skyaddr: address })
+  generate(address: string, tokenType: string) {
+    return this.post('bind', { address: address, tokenType: tokenType })
       .do(response => {
         this.purchaseOrders.first().subscribe(orders => {
           let index = orders.findIndex(order => order.address === address);

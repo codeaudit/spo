@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { PurchaseService } from '../../../services/purchase.service';
-import { MdDialog, MdDialogConfig } from '@angular/material';
+import { MdDialog, MdDialogConfig, MdDialogRef } from '@angular/material';
 import { AddDepositAddressComponent } from './add-deposit-address/add-deposit-address.component';
 import { config } from '../../../app.config';
 
@@ -25,9 +25,11 @@ export class BuyComponent {
   }
 
   addDepositAddress(token) {
+    console.log(token)
     const config = new MdDialogConfig();
     config.width = '500px';
-    this.dialog.open(AddDepositAddressComponent, config);
+    let dialogRef:MdDialogRef<AddDepositAddressComponent> = this.dialog.open(AddDepositAddressComponent, config);
+    dialogRef.componentInstance.tokenType = token;
   }
 
   searchDepositAddress(address: string) {
