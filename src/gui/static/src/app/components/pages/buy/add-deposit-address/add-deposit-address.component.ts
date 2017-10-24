@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { WalletService } from '../../../../services/wallet.service';
 import { PurchaseService } from '../../../../services/purchase.service';
 import { MdDialogRef } from '@angular/material';
+
+declare var QRCode: any;
 
 @Component({
   selector: 'app-add-deposit-address',
@@ -10,7 +12,9 @@ import { MdDialogRef } from '@angular/material';
   styleUrls: ['./add-deposit-address.component.css']
 })
 export class AddDepositAddressComponent implements OnInit {
-
+  
+  @ViewChild('DepositQR') DepositQR: ElementRef;
+  
   form: FormGroup;
   tokenType: string;
   loading: Boolean = false;
@@ -49,7 +53,22 @@ export class AddDepositAddressComponent implements OnInit {
   }
   showBindData(aData: any) {
     this.tokenAddress = aData.tokenAddress;
+    this.showQRCode(this.tokenAddress);
   }
+  
+  showQRCode(addr) {
+    console.log(this.DepositQR)
+    new QRCode(this.DepositQR.nativeElement, {
+      text: addr,
+      width: 200,
+      height: 200,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      useSVG: false,
+      correctLevel: QRCode.CorrectLevel['M']
+    });    
+  }
+  
   private initForm() {
     this.form = this.formBuilder.group({
       address: ['', Validators.required],

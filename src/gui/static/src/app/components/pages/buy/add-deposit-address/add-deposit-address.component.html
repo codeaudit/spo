@@ -1,12 +1,16 @@
-<p>Choose an address to generate a BTC deposit link for:</p>
+<p>Choose an address to generate a {{tokenType | uppercase}} deposit link for:</p>
 <div [formGroup]="form">
   <md-select formControlName="address" placeholder="Select Address" class="input-field">
     <md-option *ngFor="let address of walletService.allAddresses() | async" [value]="address.address">
       {{ address.address }}
     </md-option>
   </md-select>
-  <div *ngIf="tokenAddress">
-    {{tokenAddress}}
+  <div [hidden]="!tokenAddress">
+    <div class="spo-ada-token-addrtitle">DepositAddress</div>
+    <div class="spo-ada-token-addr">{{tokenAddress}}</div>
+    <div class="spo-ada-qrbox">
+      <div #DepositQR></div>
+    </div>
   </div>
 </div>
 <div class="button-line">
