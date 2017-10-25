@@ -8,9 +8,9 @@ export class TellerStatusPipe implements PipeTransform {
   transform(value: any): any {
     switch (value) {
       case 'waiting_deposit':
-        return 'Waiting for Bitcoin deposit';
+        return 'Waiting for deposit';
       case 'waiting_send':
-        return 'Waiting to send Spaco';
+        return 'Waiting to send Spo';
       case 'waiting_confirm':
         return 'Waiting for confirmation';
       case 'done':
