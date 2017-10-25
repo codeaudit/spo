@@ -7,7 +7,7 @@
   <md-card>   
     <div style="display:none">
       The current rate is 0.0002 BTC per
-      SPO. To buy SPO, request a BTC deposit address. Once you have a BTC deposit address, any BTC deposits will
+      SPO. To donation SPO, request a BTC deposit address. Once you have a BTC deposit address, any BTC deposits will
       automatically be added to your selected address.
       <button md-icon-button (click)="searchDepositAddress(address.address)" [disabled]="scanning">
         <md-icon>refresh</md-icon>
@@ -28,20 +28,16 @@
   </md-list>  
 </md-card>
 
-<ol>
-  <li *ngFor="let dir of ['north', 'south', 'east', 'west']">
-  {{dir}}
-  </li>
-  </ol>
+
 
   <md-list>
-    <ng-container *ngFor="let address of (purchaseService.all() | async); let i = index">
+    <ng-container *ngFor="let order of (purchaseService.all() | async); let i = index">
       <md-divider *ngIf="i"></md-divider>
-      <h3 md-subheader>Spaco address: {{ address.address }}</h3>
-      <md-list-item *ngFor="let btc of address.addresses">
-        <h4 md-line> Bitcoin address: {{ btc.btc }}</h4>
-        <p md-line> Status: {{ btc.status | tellerStatus }} (updated at: {{ btc.updated | dateTime }}) </p>
-        <button md-icon-button (click)="searchDepositAddress(address.address)" [disabled]="scanning">
+      <h3 md-subheader>Spaco address: {{ order.address }}</h3>
+      <md-list-item *ngFor="let item of order.addresses">
+        <h4 md-line> {{item.tokenType|uppercase}} address: {{ item.tokenAddress }}</h4>
+        <p md-line> Status: {{ item.status | tellerStatus }} (updated at: {{ item.updated | dateTime }}) </p>
+        <button md-icon-button (click)="searchDepositAddress(order.address,item.tokenType)" [disabled]="scanning">
           <md-icon>refresh</md-icon>
         </button>
       </md-list-item>

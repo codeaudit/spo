@@ -32,9 +32,9 @@ export class BuyComponent {
     dialogRef.componentInstance.tokenType = token;
   }
 
-  searchDepositAddress(address: string) {
+  searchDepositAddress(address: string,tokenType:string) {
     this.scanning = true;
-    this.purchaseService.scan(address).subscribe(() => {
+    this.purchaseService.scan(address,tokenType).subscribe(() => {
       this.disableScanning();
     }, error => {
       this.disableScanning();

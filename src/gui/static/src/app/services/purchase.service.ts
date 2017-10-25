@@ -69,37 +69,45 @@ export class PurchaseService {
 
 
   generate(address: string, tokenType: string) {
+    console.log("address:"+address+", tokenType:"+tokenType);
     return this.post('bind', { address: address, tokenType: tokenType })
       .do(response => {
-        this.purchaseOrders.first().subscribe(orders => {
-          let index = orders.findIndex(order => order.address === address);
-          if (index === -1) {
-            orders.push({address: address, addresses: []});
-            index = orders.length - 1;
-          }
-          const timestamp = Math.floor(Date.now() / 1000);
-          orders[index].addresses.unshift({
-            btc: response.btc_address,
-            status: 'waiting_deposit',
-            created: timestamp,
-            updated: timestamp,
-          });
-          this.updatePurchaseOrders(orders)
-        });
+     
+        console.log(response);
+        if(response.code == 0) {      
+          //一个token可以有多个地址
+            this.purchaseOrders.first().subscribe(orders => {
+              let index = orders.findIndex(order => order.address === address && order.tokenType === tokenType);
+              if (index === -1) {
+                orders.push({address: address, tokenType:tokenType, addresses: []});
+                index = orders.length - 1;
+              }
+              const timestamp = Math.floor(Date.now() / 1000);
+              orders[index].addresses.unshift({
+                tokenType: response.data.tokenType,
+                tokenAddress: response.data.tokenAddress,
+                status: 'waiting_deposit',
+                created: timestamp,
+                updated: timestamp,
+              });
+              this.updatePurchaseOrders(orders)
+            });
+        }
       });
+      
   }
 
-  scan(address: string) {
-    return this.get('status?skyaddr=' + address).do(response => {
+  scan(address: string,tokenType: string) {
+    return this.get('status?address=' + address+"&tokenType="+tokenType).do(response => {
       this.purchaseOrders.first().subscribe(orders => {
-        let index = orders.findIndex(order => order.address === address);
+        let index = orders.findIndex(order => order.address === address && order.tokenType === tokenType);
         // Sort addresses ascending by creation date to match teller status response
         orders[index].addresses.sort((a, b) =>  b.created - a.created);
-        for (const btcAddress of orders[index].addresses) {
+        for (const tokenAddress of orders[index].addresses) {
           // Splice last status to assign this to the latest known order
           const status = response.statuses.splice(-1,1)[0];
-          btcAddress.status = status.status;
-          btcAddress.updated = status.update_at;
+          tokenAddress.status = status.status;
+          tokenAddress.updated = status.update_at;
         }
 
         this.updatePurchaseOrders(orders)
@@ -147,6 +155,7 @@ export class PurchaseService {
 
   private updatePurchaseOrders(collection: any[]) {
     this.purchaseOrders.next(collection);
+    console.log(collection);
     window.localStorage.setItem('purchaseOrders', JSON.stringify(collection));
   }
 

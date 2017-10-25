@@ -25,20 +25,23 @@ export class AddDepositAddressComponent implements OnInit {
     private dialogRef: MdDialogRef<AddDepositAddressComponent>,
     private formBuilder: FormBuilder,
     private purchaseService: PurchaseService,
+    
   ) {}
 
   ngOnInit() {
     this.initForm();
   }
 
-  generate() {
+  generate(tokenType) {
     if (this.form.value.address === "") {
       alert("Please choose an address");
       return;
     }
     this.loading = true;
-    this.purchaseService.generate(this.form.value.address, this.tokenType).subscribe((e: any) => {
-      //console.log(e);
+    console.log("tokenType:"+tokenType+":"+this.form.value.address);
+    //return;
+    this.purchaseService.generate(this.form.value.address, tokenType).subscribe((e: any) => {
+      console.log(e);
       if(e.code !== 0) {
         alert(e.errmsg);
         return;
