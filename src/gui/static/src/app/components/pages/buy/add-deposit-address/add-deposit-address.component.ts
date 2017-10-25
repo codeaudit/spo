@@ -19,6 +19,7 @@ export class AddDepositAddressComponent implements OnInit {
   tokenType: string;
   loading: Boolean = false;
   tokenAddress: string;
+  subscribeRef: any;
   
   constructor(
     public walletService: WalletService,
@@ -31,6 +32,12 @@ export class AddDepositAddressComponent implements OnInit {
   ngOnInit() {
     this.initForm();
   }
+  
+  ngOnDestroy() {
+    if(this.subscribeRef) {
+      this.subscribeRef.unsubscribe();
+    }
+  }
 
   generate(tokenType) {
     if (this.form.value.address === "") {
@@ -40,7 +47,7 @@ export class AddDepositAddressComponent implements OnInit {
     this.loading = true;
     console.log("tokenType:"+tokenType+":"+this.form.value.address);
     //return;
-    this.purchaseService.generate(this.form.value.address, tokenType).subscribe((e: any) => {
+    this.subscribeRef = this.purchaseService.generate(this.form.value.address, tokenType).subscribe((e: any) => {
       console.log(e);
       if(e.code !== 0) {
         alert(e.errmsg);
@@ -76,5 +83,9 @@ export class AddDepositAddressComponent implements OnInit {
     this.form = this.formBuilder.group({
       address: ['', Validators.required],
     });
+  }
+  
+  closeDialog() {
+    this.dialogRef.close();
   }
 }
