@@ -3,7 +3,7 @@ import { PurchaseService } from '../../../services/purchase.service';
 import { MdDialog, MdDialogConfig, MdDialogRef } from '@angular/material';
 import { AddDepositAddressComponent } from './add-deposit-address/add-deposit-address.component';
 import { config } from '../../../app.config';
-
+import { QrCodeComponent } from '../../layout/qr-code/qr-code.component';
 @Component({
   selector: 'app-buy',
   templateUrl: './buy.component.html',
@@ -61,6 +61,12 @@ export class BuyComponent {
   {
     setTimeout(() => this.scanning = false, 1000);
   }
+  showQr(address) {
+    const config = new MdDialogConfig();
+    config.data = address;
+    this.dialog.open(QrCodeComponent, config);
+  }
+  
   ngOnInit(): void {
     
   }
