@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+
 import { PurchaseService } from '../../../services/purchase.service';
 import { MdDialog, MdDialogConfig, MdDialogRef } from '@angular/material';
 import { AddDepositAddressComponent } from './add-deposit-address/add-deposit-address.component';
 import { config } from '../../../app.config';
 import { QrCodeComponent } from '../../layout/qr-code/qr-code.component';
+
+
 @Component({
   selector: 'app-buy',
   templateUrl: './buy.component.html',
@@ -15,6 +18,8 @@ export class BuyComponent {
   otcEnabled: boolean;
   scanning = false;
   supportedTokens = [];
+
+  
 
   constructor(
     public purchaseService: PurchaseService,
@@ -67,6 +72,8 @@ export class BuyComponent {
     this.dialog.open(QrCodeComponent, config);
   }
   
+ 
+
   ngOnInit(): void {
     
   }
