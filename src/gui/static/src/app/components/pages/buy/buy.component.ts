@@ -68,7 +68,7 @@ export class BuyComponent {
   }
   showQr(address) {
     const config = new MdDialogConfig();
-    config.data = address;
+    config.data =  {address: address};
     this.dialog.open(QrCodeComponent, config);
   }
   
