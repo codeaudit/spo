@@ -8,7 +8,7 @@ import { Observable } from 'rxjs/Observable';
 export class PurchaseService {
 
   private purchaseOrders: Subject<any[]> = new BehaviorSubject<any[]>([]);
-  // private purchaseUrl: string = 'https://event.spaco.io/api/';
+ // private purchaseUrl: string = 'https://yqkkn.com/api/';
   private purchaseUrl: string = 'http://121.42.24.199:7071/api/';
   // private purchaseUrl: string = '/teller/';
 
@@ -26,45 +26,6 @@ export class PurchaseService {
 
   all() {
     return this.purchaseOrders.asObservable();
-  }
-
-  generateTokenAddress(address: string,coinType) {
-    return this.post('bind', { address: address,plan_coin_type:coinType })
-      .do(response => {
-        this.purchaseOrders.first().subscribe(orders => {
-          let index = orders.findIndex(order => order.address === address);
-          if (index === -1) {
-            orders.push({address: address, addresses: []});
-            index = orders.length - 1;
-          }
-          const timestamp = Math.floor(Date.now() / 1000);
-          orders[index].addresses.unshift({
-            btc: response.btc_address,
-            status: 'waiting_deposit',
-            created: timestamp,
-            updated: timestamp,
-          });
-          this.updatePurchaseOrders(orders)
-        });
-      });
-  }
-
-  scanTokenAddress(address: string) {
-    return this.get('status?skyaddr=' + address).do(response => {
-      this.purchaseOrders.first().subscribe(orders => {
-        let index = orders.findIndex(order => order.address === address);
-        // Sort addresses ascending by creation date to match teller status response
-        orders[index].addresses.sort((a, b) =>  b.created - a.created);
-        for (const btcAddress of orders[index].addresses) {
-          // Splice last status to assign this to the latest known order
-          const status = response.statuses.splice(-1,1)[0];
-          btcAddress.status = status.status;
-          btcAddress.updated = status.update_at;
-        }
-
-        this.updatePurchaseOrders(orders)
-      });
-    });
   }
 
 
@@ -96,19 +57,71 @@ export class PurchaseService {
       });
       
   }
-
+  
+  getCoinType(tokenType:string) {
+    console.log(tokenType);
+    if(tokenType == "skycoin") {
+      return "sky";
+    } else if(tokenType == "bitcoin") {
+      return "btc";
+    } else if(tokenType == "ethcoin") {
+      return "eth";
+    } else {
+      return "unknow";
+    }
+  }
   scan(address: string,tokenType: string) {
     return this.get('status?address=' + address+"&tokenType="+tokenType).do(response => {
+      if(response.code != 0) {
+        console.log(response);        
+        return;
+      }
       this.purchaseOrders.first().subscribe(orders => {
-        let index = orders.findIndex(order => order.address === address && order.tokenType === tokenType);
+       // for(var idx in orders) {
+       //   console.log(orders[idx]);
+       // }
+        let coinType = this.getCoinType(tokenType);
+
+      //  console.log(address+":"+coinType);//
+        //find the items
+        let index = orders.findIndex(order => order.address === address && order.tokenType === coinType);
+      //  console.log("index:"+index);
+        //orders[index].addresses一个spo针对同一个币种，可能有多个地址
+
         // Sort addresses ascending by creation date to match teller status response
         orders[index].addresses.sort((a, b) =>  b.created - a.created);
-        for (const tokenAddress of orders[index].addresses) {
-          // Splice last status to assign this to the latest known order
-          const status = response.statuses.splice(-1,1)[0];
-          tokenAddress.status = status.status;
-          tokenAddress.updated = status.update_at;
+       // console.log(orders[index]);
+        
+       // {"errmsg":"","code":0,"data":
+       //{"statuses":[
+      //{"seq":0,"update_at":1509881371,"address":"277BPWQYRVgUccUPZ3iCsJ9JrBwc4mEJ76","tokenType":"skycoin","status":"done"},
+     // {"seq":1,"update_at":1509881380,"address":"277BPWQYRVgUccUPZ3iCsJ9JrBwc4mEJ76","tokenType":"skycoin","status":"done"},
+     //{"seq":2,"update_at":1509881389,"address":"277BPWQYRVgUccUPZ3iCsJ9JrBwc4mEJ76","tokenType":"skycoin","status":"done"},
+     //{"seq":3,"update_at":1509893810,"address":"ZaFfCQno5frpksPfd2CY1HWMyhpea7S3q4","tokenType":"skycoin","status":"waiting_deposit"},
+     //{"seq":4,"update_at":1509893810,"address":"2YG74USfHaDzcZ5xbhVoht8DPMocxhMLaNn","tokenType":"skycoin","status":"waiting_deposit"}]}}
+
+       // const status = response.data.statuses.splice(-1,1)[0];
+        //console.log(status+":"+status);
+        //console.log("orders[index].addresses");
+        //console.log(orders[index].addresses);
+        for(var idx in orders[index].addresses) {
+          var status;
+          var tmpAddress = orders[index].addresses[idx].tokenAddress;
+          var seq = 0;
+          for(var j in response.data.statuses) {//status里面有该地址该币种的所有状态
+            var tmpStatus = response.data.statuses[j];
+            if(tmpStatus.address == tmpAddress) {
+                if(tmpStatus.seq >= seq) {
+                  status = tmpStatus;
+                }
+            }
+          }
+          
+          orders[index].addresses[idx].status = status.status
+          orders[index].addresses[idx].updated =status.update_at;
+        //  console.log( orders[index].addresses[idx]);
         }
+       
 
         this.updatePurchaseOrders(orders)
       });

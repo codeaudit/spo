@@ -6,6 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class TellerStatusPipe implements PipeTransform {
 
   transform(value: any): any {
+    console.log(value);
     switch (value) {
       case 'waiting_deposit':
         return 'Waiting for deposit';

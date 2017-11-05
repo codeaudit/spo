@@ -1,13 +1,13 @@
 <p *ngIf="!otcEnabled">Sorry, otc has currently been disabled!</p>
 <md-card *ngIf="otcEnabled">
-  <md-card-title>Purchase Spo</md-card-title>
+  <md-card-title>Support Spo</md-card-title>
   <md-card class="skycoin-details">
-    You can buy Spaco Tokens directly from your wallet using our Spaco Token Teller service.
+    You can get Spaco Tokens directly from your wallet using our Spaco Token Teller service.
   </md-card>
   <md-card>   
     <div style="display:none">
       The current rate is 0.0002 BTC per
-      SPO. To donation SPO, request a BTC deposit address. Once you have a BTC deposit address, any BTC deposits will
+      SPO. To support SPO, request a BTC deposit address. Once you have a BTC deposit address, any BTC deposits will
       automatically be added to your selected address.
       <button md-icon-button (click)="searchDepositAddress(address.address)" [disabled]="scanning">
         <md-icon>refresh</md-icon>
