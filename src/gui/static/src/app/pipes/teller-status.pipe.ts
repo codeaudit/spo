@@ -9,7 +9,7 @@ export class TellerStatusPipe implements PipeTransform {
     console.log(value);
     switch (value) {
       case 'waiting_deposit':
-        return 'Waiting for deposit';
+        return 'Waiting for deposit or confirmation';
       case 'waiting_send':
         return 'Waiting to send Spo';
       case 'waiting_confirm':

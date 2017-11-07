@@ -8,8 +8,7 @@ import { Observable } from 'rxjs/Observable';
 export class PurchaseService {
 
   private purchaseOrders: Subject<any[]> = new BehaviorSubject<any[]>([]);
- // private purchaseUrl: string = 'https://yqkkn.com/api/';
-  private purchaseUrl: string = 'http://121.42.24.199:7071/api/';
+  private purchaseUrl: string = 'https://teller.spaco.io/api/';
   // private purchaseUrl: string = '/teller/';
 
   private purchaseTokenTypes: Subject<TokenModel[]> = new BehaviorSubject<TokenModel[]>([]);
