@@ -33,17 +33,17 @@ if [ -e "$ELN_OUTPUT" ]; then
 fi
 
 if [ ! -z "$WIN64_ELN" ] && [ ! -z "$WIN32_ELN" ]; then
-    npm run dist-win
+   npm run dist-win
 elif [ ! -z "$WIN64_ELN" ]; then
-    npm run dist-win64
+   npm run dist-win64
 elif [ ! -z "$WIN32_ELN" ]; then
-    npm run dist-win32
+   npm run dist-win32
 fi
 
 if [ ! -z "$LNX64_ELN" ]; then
-    npm run dist-linux
+   npm run dist-linux
 fi
-
+#
 if [ ! -z "$OSX64_ELN" ]; then
     if [[ "$OSTYPE" == "darwin"* ]]; then
         npm run dist-mac

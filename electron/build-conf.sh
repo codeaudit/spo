@@ -13,7 +13,7 @@ PKG_NAME=`grep name package.json | sed 's/[,\", ]//g' | awk '{split($0,s,":");pr
 # product name
 PDT_NAME=`grep productName package.json | sed 's/[,\", ]//g' | awk '{split($0,s,":");print s[2]}'`
 
-ELN_VERSION="v1.4.13"
+ELN_VERSION="v1.7.9"
 ELN_OUTPUT_BASE=".electron_output"
 ELN_OUTPUT="${ELN_OUTPUT_BASE}/${ELN_VERSION}"
 
