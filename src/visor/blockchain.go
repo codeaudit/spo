@@ -34,7 +34,7 @@ const (
 // are unlikely to occur. DebugLevel2 adds checks for conditions that
 // can only occur through programmer error and malice.
 
-// Note: a droplet is the base coin unit. Each Spaco is one million droplets
+// Note: a droplet is the base coin unit. Each Skycoin is one million droplets
 
 //Termonology:
 // UXTO - unspent transaction outputs
@@ -242,7 +242,6 @@ func (bc *Blockchain) ExecuteBlockWithTx(tx *bolt.Tx, sb *coin.SignedBlock) erro
 		return err
 	}
 
-	bc.notify(nb.Block)
 	return nil
 }
 
@@ -627,7 +626,7 @@ func (bc *Blockchain) BindListener(ls BlockListener) {
 }
 
 // notifies the listener the new block.
-func (bc *Blockchain) notify(b coin.Block) {
+func (bc *Blockchain) Notify(b coin.Block) {
 	for _, l := range bc.blkListener {
 		l(b)
 	}

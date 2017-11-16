@@ -3,7 +3,7 @@
     "productName": "Spaco",
     "author": "spaco team",
     "main": "src/electron-main.js",
-    "version": "0.20.2",
+    "version": "0.20.3",
     "description": "Spaco wallet",
     "build": {
         "appId": "io.spaco.spo",

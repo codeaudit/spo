@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.20.3] - 2017-11-16
+
+### Fixed
+
+- Fix block sync stall (mostly affected Windows users, but any OS was potentially affected)
+
 ## [0.20.2] - 2017-10-12
 
 ### Fixed

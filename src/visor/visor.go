@@ -86,7 +86,7 @@ type Config struct {
 }
 
 // NewVisorConfig put cap on block size, not on transactions/block
-//spo transactions are smaller than Bitcoin transactions so spo has
+//Skycoin transactions are smaller than Bitcoin transactions so skycoin has
 //a higher transactions per second for the same block size
 func NewVisorConfig() Config {
 	c := Config{
@@ -408,7 +408,7 @@ func (vs *Visor) ExecuteSignedBlock(b coin.SignedBlock) error {
 		return err
 	}
 
-	return vs.db.Update(func(tx *bolt.Tx) error {
+	if err := vs.db.Update(func(tx *bolt.Tx) error {
 		if err := vs.Blockchain.ExecuteBlockWithTx(tx, &b); err != nil {
 			return err
 		}
@@ -421,7 +421,12 @@ func (vs *Visor) ExecuteSignedBlock(b coin.SignedBlock) error {
 		vs.Unconfirmed.RemoveTransactionsWithTx(tx, txHashes)
 
 		return nil
-	})
+	}); err != nil {
+		return err
+	}
+
+	vs.Blockchain.Notify(b.Block)
+	return nil
 }
 
 // Returns an error if the cipher.Sig is not valid for the coin.Block
