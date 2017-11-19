@@ -62,34 +62,34 @@ if [[ $GOX_OSARCH == *"darwin/amd64"* ]]; then
 fi
 
 if [[ $GOX_OSARCH == *"linux/amd64"* ]]; then
-    LNX64_ELN="${PKG_NAME}-${APP_VERSION}-gui-linux-x64"
+    LNX64_ELN="${PDT_NAME}-${APP_VERSION}-gui-linux-x64"
     LNX64_ELN_PLT="linux-x64"
     LNX64_ELN_ZIP="${LNX64_ELN}.tar.gz"
-    LNX64_STL="${PKG_NAME}-${APP_VERSION}-bin-linux-x64"
+    LNX64_STL="${PDT_NAME}-${APP_VERSION}-bin-linux-x64"
     LNX64_STL_ZIP="${LNX64_STL}.tar.gz"
     LNX64_OUT="linux_x64"
 fi
 
 if [[ $GOX_OSARCH == *"windows/amd64"* ]]; then
-    WIN64_ELN="${PKG_NAME}-${APP_VERSION}-gui-win-x64"
+    WIN64_ELN="${PDT_NAME}-${APP_VERSION}-gui-win-x64"
     WIN64_ELN_PLT="win32-x64"
     WIN64_ELN_ZIP="${WIN64_ELN}.zip"
-    WIN64_STL="${PKG_NAME}-${APP_VERSION}-bin-win-x64"
+    WIN64_STL="${PDT_NAME}-${APP_VERSION}-bin-win-x64"
     WIN64_STL_ZIP="${WIN64_STL}.zip"
     WIN64_OUT="win_x64"
 fi
 
 if [[ $GOX_OSARCH == *"windows/386"* ]]; then
-    WIN32_ELN="${PKG_NAME}-${APP_VERSION}-gui-win-x86"
+    WIN32_ELN="${PDT_NAME}-${APP_VERSION}-gui-win-x86"
     WIN32_ELN_PLT="win32-ia32"
     WIN32_ELN_ZIP="${WIN32_ELN}.zip"
-    WIN32_STL="${PKG_NAME}-${APP_VERSION}-bin-win-x86"
+    WIN32_STL="${PDT_NAME}-${APP_VERSION}-bin-win-x86"
     WIN32_STL_ZIP="${WIN32_STL}.zip"
     WIN32_OUT="win_ia32"
 fi
 
 if [[ $GOX_OSARCH == *"linux/arm"* ]]; then
-    LNX_ARM_STL="${PKG_NAME}-${APP_VERSION}-bin-linux-arm"
+    LNX_ARM_STL="${PDT_NAME}-${APP_VERSION}-bin-linux-arm"
     LNX_ARM_STL_ZIP="${LNX_ARM_STL}.tar.gz"
     LNX_ARM_OUT="linux_arm"
 fi
