@@ -1,6 +1,7 @@
 package daemon
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"net"
@@ -217,6 +218,8 @@ type Daemon struct {
 	messageEvents chan MessageEvent
 	// quit channel
 	quitC chan chan struct{}
+
+	LogBuff bytes.Buffer
 }
 
 // NewDaemon returns a Daemon with primitives allocated

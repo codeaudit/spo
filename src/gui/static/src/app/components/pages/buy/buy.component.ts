@@ -18,6 +18,7 @@ export class BuyComponent {
   otcEnabled: boolean;
   scanning = false;
   supportedTokens = [];
+  tellerNotice = {};
 
   
 
@@ -49,6 +50,7 @@ export class BuyComponent {
   load() {
     //this.purchaseService.getSupportedTokens();
     this.getSupportedTokens();
+    this.getTellerNotice();
   }
   
   getSupportedTokens(){
@@ -60,6 +62,16 @@ export class BuyComponent {
       }
       this.supportedTokens = result.data;        
     })    
+  }
+
+  getTellerNotice() {
+    this.purchaseService.getTellerNotice().subscribe(result=> {
+      if (result.code != 0) {
+        alert(result.errmsg);
+        return;
+      }
+      this.tellerNotice = result.data;  
+    })
   }
   
   private disableScanning()

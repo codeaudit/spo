@@ -12,6 +12,9 @@ export class PurchaseService {
   // private purchaseUrl: string = '/teller/';
 
   private purchaseTokenTypes: Subject<TokenModel[]> = new BehaviorSubject<TokenModel[]>([]);
+
+  //
+  private tellerNotice: Subject<any[]> = new BehaviorSubject<any[]>([]);
   
   //buy types
   //private purchaseTokenTypes :Subject<any[]> = new BehaviorSubject<any[]>([]);
@@ -139,6 +142,13 @@ export class PurchaseService {
     });    
   }
     
+  getTellerNotice() {
+    return this.get('teller').do(response=>{
+        this.tellerNotice.first().subscribe(notice=> {
+            this.tellerNotice.next(notice);
+        });
+    });    
+  }
 
   private get(url) {
     return this.http.get(this.purchaseUrl + url)

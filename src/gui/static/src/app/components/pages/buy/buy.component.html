@@ -1,9 +1,13 @@
 <p *ngIf="!otcEnabled">Sorry, otc has currently been disabled!</p>
 <md-card *ngIf="otcEnabled">
-  <md-card-title>Support Spo</md-card-title>
+  <md-card-title>Support Spaco</md-card-title>
   <md-card class="skycoin-details">
     You can get Spaco Tokens directly from your wallet using our Spaco Token Teller service.
+    <br/>
+    {{tellerNotice.desc}}    
   </md-card>
+ 
+
   <md-card>   
     <div style="display:none">
       The current rate is 0.0002 BTC per
