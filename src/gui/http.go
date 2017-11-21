@@ -1,12 +1,15 @@
 package gui
 
 import (
+	"bytes"
 	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/spaco/spo/src/cipher"
@@ -121,6 +124,8 @@ func NewGUIMux(appLoc string, daemon *daemon.Daemon) *http.ServeMux {
 	}
 
 	mux.HandleFunc("/version", versionHandler(daemon.Gateway))
+
+	mux.HandleFunc("/logs", getLogsHandler(&daemon.LogBuff))
 
 	//get set of unspent outputs
 	mux.HandleFunc("/outputs", getOutputsHandler(daemon.Gateway))
@@ -250,5 +255,82 @@ func versionHandler(gateway *daemon.Gateway) http.HandlerFunc {
 		}
 
 		wh.SendOr404(w, gateway.GetBuildInfo())
+	}
+}
+
+func attrActualLog(logInfo string) string {
+	//return logInfo
+	var actualLog string
+	actualLog = logInfo
+	if strings.HasPrefix(logInfo, "[spaco") {
+		if strings.Contains(logInfo, "\u001b") {
+			actualLog = logInfo[0 : len(logInfo)-5]
+		}
+	} else {
+		if len(logInfo) > 5 {
+			if strings.Contains(logInfo, "\u001b") {
+				actualLog = logInfo[5 : len(logInfo)-5]
+			}
+		} else {
+			actualLog = "miss use log:" + actualLog
+		}
+	}
+	return actualLog
+}
+func getLogsHandler(logbuf *bytes.Buffer) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			wh.Error405(w)
+			return
+		}
+
+		var err error
+		defaultLineNum := 10 // default line numbers
+		linenum := defaultLineNum
+		if lines := r.FormValue("lines"); lines != "" {
+			linenum, err = strconv.Atoi(lines)
+			if err != nil {
+				linenum = defaultLineNum
+			}
+		}
+		keyword := r.FormValue("include")
+		excludeKeyword := r.FormValue("exclude")
+		regstr := r.FormValue("reg")
+		logs := []string{}
+
+		reg, err := regexp.Compile(regstr)
+		if err != nil {
+			logger.Info("reg express error:%v", err)
+			regstr = ""
+		}
+
+		for {
+			logInfo, err := logbuf.ReadString(byte('\n'))
+			if err != nil {
+				//logger.Info("read logbuffer err %v", err) EOF
+				break
+			}
+			if excludeKeyword != "" && strings.Contains(logInfo, excludeKeyword) {
+				continue
+			}
+			if keyword != "" && !strings.Contains(logInfo, keyword) {
+				continue
+			}
+
+			if regstr != "" {
+				if reg.MatchString(logInfo) {
+					logs = append(logs, attrActualLog(logInfo))
+				}
+			} else {
+				logs = append(logs, attrActualLog(logInfo))
+			}
+
+			if len(logs) >= linenum || len(logInfo) == 0 {
+				logger.Debug("log logbuffer size %d", len(logs))
+				break
+			}
+		}
+
+		wh.SendOr404(w, logs)
 	}
 }
