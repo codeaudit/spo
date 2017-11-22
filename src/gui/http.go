@@ -8,7 +8,6 @@ import (
 	"net"
 	"net/http"
 	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -258,21 +257,23 @@ func versionHandler(gateway *daemon.Gateway) http.HandlerFunc {
 	}
 }
 
+/*
+attrActualLog remove color char in log
+origin: "\u001b[36m[skycoin.daemon:DEBUG] Trying to connect to 47.88.33.156:6000\u001b[0m",
+*/
 func attrActualLog(logInfo string) string {
 	//return logInfo
 	var actualLog string
 	actualLog = logInfo
 	if strings.HasPrefix(logInfo, "[spaco") {
 		if strings.Contains(logInfo, "\u001b") {
-			actualLog = logInfo[0 : len(logInfo)-5]
+			actualLog = logInfo[0 : len(logInfo)-4]
 		}
 	} else {
 		if len(logInfo) > 5 {
 			if strings.Contains(logInfo, "\u001b") {
-				actualLog = logInfo[5 : len(logInfo)-5]
+				actualLog = logInfo[5 : len(logInfo)-4]
 			}
-		} else {
-			actualLog = "miss use log:" + actualLog
 		}
 	}
 	return actualLog
@@ -285,7 +286,7 @@ func getLogsHandler(logbuf *bytes.Buffer) http.HandlerFunc {
 		}
 
 		var err error
-		defaultLineNum := 10 // default line numbers
+		defaultLineNum := 1000 // default line numbers
 		linenum := defaultLineNum
 		if lines := r.FormValue("lines"); lines != "" {
 			linenum, err = strconv.Atoi(lines)
@@ -295,21 +296,9 @@ func getLogsHandler(logbuf *bytes.Buffer) http.HandlerFunc {
 		}
 		keyword := r.FormValue("include")
 		excludeKeyword := r.FormValue("exclude")
-		regstr := r.FormValue("reg")
 		logs := []string{}
-
-		reg, err := regexp.Compile(regstr)
-		if err != nil {
-			logger.Info("reg express error:%v", err)
-			regstr = ""
-		}
-
-		for {
-			logInfo, err := logbuf.ReadString(byte('\n'))
-			if err != nil {
-				//logger.Info("read logbuffer err %v", err) EOF
-				break
-			}
+		logList := strings.Split(logbuf.String(), "\n")
+		for _, logInfo := range logList {
 			if excludeKeyword != "" && strings.Contains(logInfo, excludeKeyword) {
 				continue
 			}
@@ -317,18 +306,15 @@ func getLogsHandler(logbuf *bytes.Buffer) http.HandlerFunc {
 				continue
 			}
 
-			if regstr != "" {
-				if reg.MatchString(logInfo) {
-					logs = append(logs, attrActualLog(logInfo))
-				}
-			} else {
-				logs = append(logs, attrActualLog(logInfo))
-			}
-
-			if len(logs) >= linenum || len(logInfo) == 0 {
-				logger.Debug("log logbuffer size %d", len(logs))
+			if len(logs) >= linenum {
+				logger.Debug("logs size %d,total size:%d", len(logs), len(logList))
 				break
 			}
+			log := attrActualLog(logInfo)
+			if "" != log {
+				logs = append(logs, log)
+			}
+
 		}
 
 		wh.SendOr404(w, logs)
