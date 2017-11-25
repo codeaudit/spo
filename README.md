@@ -4,7 +4,7 @@
 [![GoDoc](https://godoc.org/github.com/spaco/spo?status.svg)](https://godoc.org/github.com/spaco/spo)
 [![Go Report Card](https://goreportcard.com/badge/github.com/spaco/spo)](https://goreportcard.com/report/github.com/spaco/spo)
 
-SPO is a next-generation tokens build on SPACO network.
+SPO is a next-generation token build on SPACO network.
 
 SPACO network improves on HTTP/HTTPS in too many ways to be addressed here.
 
