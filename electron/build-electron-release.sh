@@ -71,7 +71,7 @@ if [ -e "mac" ]; then
 fi
 
 IMG="${PKG_NAME}-${APP_VERSION}-x86_64.AppImage"
-DEST_IMG="${PKG_NAME}-${APP_VERSION}-gui-linux-x64.AppImage"
+DEST_IMG="${PDT_NAME}-${APP_VERSION}-gui-linux-x64.AppImage"
 if [ -e $IMG ]; then
     mv "$IMG" "$DEST_IMG"
     chmod +x "$DEST_IMG"
@@ -79,7 +79,7 @@ fi
 
 EXE="${PDT_NAME} Setup ${APP_VERSION}.exe"
 if [ -e "$EXE" ]; then
-    mv "$EXE" "${PKG_NAME}-${APP_VERSION}-gui-win-setup.exe"
+    mv "$EXE" "${PDT_NAME}-${APP_VERSION}-gui-win-setup.exe"
 fi
 
 # clean unpacked folders
