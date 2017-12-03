@@ -12,8 +12,9 @@ import (
 Addresses are the Ripemd160 of the double SHA256 of the public key
 - public key must be in compressed format
 
-In the block chain the address is 20+1 bytes
-- the first byte is the version byte
+In the block chain the address is 20+1+1 bytes
+- the first byte is the prefix byte(for distinguish different coins)
+- the sencond byte is the version byte
 - the next twenty bytes are RIPMD160(SHA256(SHA256(pubkey)))
 
 In base 58 format the address is 20+1+4 bytes
@@ -32,6 +33,7 @@ type Checksum [4]byte
 // Address stuct is a 25 byte with a 20 byte publickey hash, 1 byte address
 // type and 4 byte checksum.
 type Address struct {
+	Prefix  byte      //1 byte
 	Version byte      //1 byte
 	Key     Ripemd160 //20 byte pubkey hash
 }
@@ -39,6 +41,7 @@ type Address struct {
 // AddressFromPubKey creates Address from PubKey as ripemd160(sha256(sha256(pubkey)))
 func AddressFromPubKey(pubKey PubKey) Address {
 	addr := Address{
+		Prefix:  'S',
 		Version: 0,
 		Key:     pubKey.ToAddressHash(),
 	}
@@ -95,12 +98,13 @@ func addressFromBytes(b []byte) (addr Address, err error) {
 		}
 	}()
 
-	if len(b) != 20+1+4 {
+	if len(b) != 20+1+4 || len(b) != 20+1+4+1 { //for compatible
 		return Address{}, errors.New("Invalid address length")
 	}
 	a := Address{}
 	copy(a.Key[0:20], b[0:20])
 	a.Version = b[20]
+	a.Prefix = byte('S')
 	if a.Version != 0 {
 		return Address{}, errors.New("Invalid version")
 	}
@@ -118,11 +122,12 @@ func addressFromBytes(b []byte) (addr Address, err error) {
 
 // Bytes return address as a byte slice
 func (addr *Address) Bytes() []byte {
-	b := make([]byte, 20+1+4)
+	b := make([]byte, 20+1+4+1) //rip version cheksum prefix
 	copy(b[0:20], addr.Key[0:20])
 	b[20] = addr.Version
 	chksum := addr.Checksum()
 	copy(b[21:25], chksum[0:4])
+	b[25] = addr.Prefix
 	return b
 }
 
@@ -202,7 +207,7 @@ func BitcoinAddressFromPubkey(pubkey PubKey) string {
 func SpoAddressFromPubKey(pubkey PubKey) string {
 	b1 := SumSHA256(pubkey[:])
 	b2 := HashRipemd160(b1[:])
-	b3 := append([]byte{byte(0)}, b2[:]...)
+	b3 := append([]byte{byte('S'), byte(0)}, b2[:]...) //add prefix 'S'
 	b4 := DoubleSHA256(b3)
 	b5 := append(b3, b4[0:4]...)
 	return string(base58.Hex2Base58(b5))
