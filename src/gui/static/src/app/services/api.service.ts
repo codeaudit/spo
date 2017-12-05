@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/throw';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/timeout';
 
 @Injectable()
 export class ApiService {
@@ -14,13 +15,13 @@ export class ApiService {
   constructor(private http: Http) { }
 
   get(url, options = null) {
-    return this.http.get(this.getUrl(url, options), this.getHeaders())
+    return this.http.get(this.getUrl(url, options), this.getHeaders()).timeout(15000)
       .map((res: any) => res.json())
       .catch((error: any) => Observable.throw(error || 'Server error'));
   }
 
   post(url, options = {}) {
-    return this.http.post(this.getUrl(url), this.getQueryString(options), this.returnRequestOptions())
+    return this.http.post(this.getUrl(url), this.getQueryString(options), this.returnRequestOptions()).timeout(15000)
       .map((res: any) => res.json())
       .catch((error: any) => Observable.throw(error || 'Server error'));
   }

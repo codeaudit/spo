@@ -3,6 +3,7 @@ import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/timeout';
 
 @Injectable()
 export class PurchaseService {
@@ -151,12 +152,12 @@ export class PurchaseService {
   }
 
   private get(url) {
-    return this.http.get(this.purchaseUrl + url)
+    return this.http.get(this.purchaseUrl + url).timeout(15000)
       .map((res: any) => res.json())
   }
 
   private post(url, parameters = {}) {
-    return this.http.post(this.purchaseUrl + url, parameters)
+    return this.http.post(this.purchaseUrl + url, parameters).timeout(15000)
       .map((res: any) => res.json())
   }
 
