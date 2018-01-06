@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/boltdb/bolt"
+
 	"github.com/spaco/spo/src/visor/bucket"
 )
 

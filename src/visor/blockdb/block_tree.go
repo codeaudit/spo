@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/boltdb/bolt"
+
 	"github.com/spaco/spo/src/cipher"
 	"github.com/spaco/spo/src/cipher/encoder"
 	"github.com/spaco/spo/src/coin"

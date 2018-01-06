@@ -10,7 +10,7 @@ import (
 )
 
 func TestDistributionAddressArrays(t *testing.T) {
-	require.Len(t, GetDistributionAddresses(), 280)
+	require.Len(t, GetDistributionAddresses(), 100)
 
 	// At the time of this writing, there should be 25 addresses in the
 	// unlocked pool and 75 in the locked pool.

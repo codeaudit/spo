@@ -3,10 +3,11 @@ package daemon
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/spaco/spo/src/cipher"
 	"github.com/spaco/spo/src/coin"
 	"github.com/spaco/spo/src/testutil"
-	"github.com/stretchr/testify/require"
 )
 
 func TestFbyAddresses(t *testing.T) {

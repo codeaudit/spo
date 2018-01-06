@@ -1,21 +1,23 @@
-# SPO
+![skycoin logo](https://user-images.githubusercontent.com/26845312/32426705-d95cb988-c281-11e7-9463-a3fce8076a72.png)
+
+# Skycoin
 
 [![Build Status](https://travis-ci.org/spaco/spo.svg)](https://travis-ci.org/spaco/spo)
 [![GoDoc](https://godoc.org/github.com/spaco/spo?status.svg)](https://godoc.org/github.com/spaco/spo)
 [![Go Report Card](https://goreportcard.com/badge/github.com/spaco/spo)](https://goreportcard.com/report/github.com/spaco/spo)
 
-SPO is a next-generation token build on SPACO network.
+Skycoin is a next-generation cryptocurrency.
 
-SPACO network improves on HTTP/HTTPS in too many ways to be addressed here.
+Skycoin improves on Bitcoin in too many ways to be addressed here.
 
-SPACO is small part of OP Redecentralize and OP next-generation net Plan.
+Skycoin is a small part of OP Redecentralize and OP Darknet Plan.
 
 ## Links
 
-* [spaco.io](https://www.spaco.io)
-* [Spaco Blog](https://blog.spaco.io)
-* [Spaco Blockchain Explorer](https://explorer.spaco.io)
-* [Spaco Distribution Event](https://event.spaco.io)
+* [skycoin.net](https://www.skycoin.net)
+* [Skycoin Blog](https://blog.skycoin.net)
+* [Skycoin Blockchain Explorer](https://explorer.skycoin.net)
+* [Skycoin Distribution Event](https://event.skycoin.net)
 
 ## Table of Contents
 
@@ -23,14 +25,16 @@ SPACO is small part of OP Redecentralize and OP next-generation net Plan.
 
 - [Installation](#installation)
     - [Go 1.9+ Installation and Setup](#go-19-installation-and-setup)
-    - [Go get SPACO](#go-get-SPACO)
-    - [Run SPACO from the command line](#run-SPACO-from-the-command-line)
-    - [Show SPACO node options](#show-SPACO-node-options)
-    - [Run SPACO with options](#run-SPACO-with-options)
+    - [Go get skycoin](#go-get-skycoin)
+    - [Run Skycoin from the command line](#run-skycoin-from-the-command-line)
+    - [Show Skycoin node options](#show-skycoin-node-options)
+    - [Run Skycoin with options](#run-skycoin-with-options)
+    - [Docker image](#docker-image)
 - [API Documentation](#api-documentation)
     - [Wallet REST API](#wallet-rest-api)
     - [JSON-RPC 2.0 API](#json-rpc-20-api)
-    - [SPACO command line interface](#SPACO-command-line-interface)
+    - [Skycoin command line interface](#skycoin-command-line-interface)
+- [Contributing a node to the network](#contributing-a-node-to-the-network)
 - [Development](#development)
     - [Modules](#modules)
     - [Running Tests](#running-tests)
@@ -49,10 +53,10 @@ SPACO is small part of OP Redecentralize and OP next-generation net Plan.
 
 [Golang 1.9+ Installation/Setup](./Installation.md)
 
-### Go get SPACO
+### Go get skycoin
 
 ```sh
-go get https://github.com/spaco/spo/...
+go get github.com/spaco/spo/...
 ```
 
 This will download `github.com/spaco/spo` to `$GOPATH/src/github.com/spaco/spo`.
@@ -60,26 +64,44 @@ This will download `github.com/spaco/spo` to `$GOPATH/src/github.com/spaco/spo`.
 You can also clone the repo directly with `git clone https://github.com/spaco/spo`,
 but it must be cloned to this path: `$GOPATH/src/github.com/spaco/spo`.
 
-### Run SPACO from the command line
+### Run Skycoin from the command line
 
 ```sh
 cd $GOPATH/src/github.com/spaco/spo
 make run
 ```
 
-### Show SPACO node options
+### Show Skycoin node options
 
 ```sh
 cd $GOPATH/src/github.com/spaco/spo
 make run-help
 ```
 
-### Run SPACO with options
+### Run Skycoin with options
 
 ```sh
 cd $GOPATH/src/github.com/spaco/spo
 make ARGS="--launch-browser=false" run
 ```
+
+### Docker image
+
+```
+$ docker volume create skycoin-data
+$ docker volume create skycoin-wallet
+$ docker run -ti --rm \
+    -v skycoin-data:/data \
+    -v skycoin-wallet:/wallet \
+    -p 6000:6000 \
+    -p 6420:6420 \
+    -p 6430:6430 \
+    spaco/spo
+```
+
+Access the dashboard: [http://localhost:6420](http://localhost:6420).
+
+Access the API: [http://localhost:6420/version](http://localhost:6420/version).
 
 ## API Documentation
 
@@ -91,9 +113,15 @@ make ARGS="--launch-browser=false" run
 
 [JSON-RPC 2.0 README](src/api/webrpc/README.md).
 
-### SPACO command line interface
+### Skycoin command line interface
 
 [CLI command API](cmd/cli/README.md).
+
+## Contributing a node to the network
+
+Add your node's ip:port to the [peers.txt](./peers.txt) file.
+This file will be periodically uploaded to https://downloads.skycoin.net/blockchain/peers.txt
+and used to seed client with peers.
 
 ## Development
 
@@ -122,7 +150,11 @@ make test
 
 ### Formatting
 
-All `.go` source files should be formatted with `gofmt` or `goimports`.
+All `.go` source files should be formatted `goimports`.  You can do this with:
+
+```sh
+make format
+```
 
 ### Code Linting
 
@@ -221,7 +253,3 @@ For example, `v0.20.0` becomes `v0.20.1`, for minor fixes.
 ## Changelog
 
 [CHANGELOG.md](CHANGELOG.md)
-
-## Acknowledgement
-
-Thank Skycoin team especially Synth and Steve! Thank you for your support！
