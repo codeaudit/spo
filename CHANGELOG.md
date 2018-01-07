@@ -168,7 +168,6 @@ fix logo error
 
 [Unreleased]: https://github.com/spaco/spo/compare/master...develop
 [0.21.1]: https://github.com/spaco/spo/compare/v0.21.0...v0.21.1
-[0.21.0]: https://github.com/spaco/spo/compare/v0.20.4...v0.21.0
 [0.20.4]: https://github.com/spaco/spo/compare/v0.20.3...v0.20.4
 [0.20.3]: https://github.com/spaco/spo/compare/v0.20.2...v0.20.3
 [0.20.2]: https://github.com/spaco/spo/compare/v0.20.1...v0.20.2

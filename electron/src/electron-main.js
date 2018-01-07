@@ -13,7 +13,7 @@ const cwd = require('process').cwd();
 // This adds refresh and devtools console keybindings
 // Page can refresh with cmd+r, ctrl+r, F5
 // Devtools can be toggled with cmd+alt+i, ctrl+shift+i, 
-require('electron-debug')({ enabled: true, showDevTools: true });
+require('electron-debug')({ enabled: true, showDevTools: false });
 
 
 global.eval = function() { throw new Error('bad!!'); }
