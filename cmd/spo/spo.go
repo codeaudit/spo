@@ -38,7 +38,7 @@ var (
 	help = false
 
 	logger     = logging.MustGetLogger("main")
-	logFormat  = "[spaco.%{module}:%{level}] %{message}"
+	logFormat  = "[spaco.%{time}:%{shortfile}:%{module}:%{level}] %{message}"
 	logModules = []string{
 		"main",
 		"daemon",
