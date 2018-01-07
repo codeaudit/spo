@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/timeout';
+import { TokenModel } from '../models/token.model';
 
 @Injectable()
 export class PurchaseService {
@@ -16,7 +17,7 @@ export class PurchaseService {
 
   //
   private tellerNotice: Subject<any[]> = new BehaviorSubject<any[]>([]);
-  
+
   //buy types
   //private purchaseTokenTypes :Subject<any[]> = new BehaviorSubject<any[]>([]);
 
@@ -36,9 +37,9 @@ export class PurchaseService {
     console.log("address:"+address+", tokenType:"+tokenType);
     return this.post('bind', { address: address, tokenType: tokenType })
       .do(response => {
-     
+
         console.log(response);
-        if(response.code == 0) {      
+        if(response.code == 0) {
           //一个token可以有多个地址
             this.purchaseOrders.first().subscribe(orders => {
               let index = orders.findIndex(order => order.address === address && order.tokenType === tokenType);
@@ -58,9 +59,9 @@ export class PurchaseService {
             });
         }
       });
-      
+
   }
-  
+
   getCoinType(tokenType:string) {
     console.log(tokenType);
     if(tokenType == "skycoin") {
@@ -76,7 +77,7 @@ export class PurchaseService {
   scan(address: string,tokenType: string) {
     return this.get('status?address=' + address+"&tokenType="+tokenType).do(response => {
       if(response.code != 0) {
-        console.log(response);        
+        console.log(response);
         return;
       }
       this.purchaseOrders.first().subscribe(orders => {
@@ -94,7 +95,7 @@ export class PurchaseService {
         // Sort addresses ascending by creation date to match teller status response
         orders[index].addresses.sort((a, b) =>  b.created - a.created);
        // console.log(orders[index]);
-        
+
        // {"errmsg":"","code":0,"data":
        //{"statuses":[
       //{"seq":0,"update_at":1509881371,"address":"277BPWQYRVgUccUPZ3iCsJ9JrBwc4mEJ76","tokenType":"skycoin","status":"done"},
@@ -119,18 +120,18 @@ export class PurchaseService {
                 }
             }
           }
-          
+
           orders[index].addresses[idx].status = status.status
           orders[index].addresses[idx].updated =status.update_at;
         //  console.log( orders[index].addresses[idx]);
         }
-       
+
 
         this.updatePurchaseOrders(orders)
       });
     });
   }
-  
+
   alltokens(): Observable<TokenModel[]> {
     return this.purchaseTokenTypes.asObservable();
   }
@@ -140,15 +141,15 @@ export class PurchaseService {
         this.purchaseTokenTypes.first().subscribe(tokens=> {
             this.updateTokenTypes(tokens)
         });
-    });    
+    });
   }
-    
+
   getTellerNotice() {
     return this.get('teller').do(response=>{
         this.tellerNotice.first().subscribe(notice=> {
             this.tellerNotice.next(notice);
         });
-    });    
+    });
   }
 
   private get(url) {

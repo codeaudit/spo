@@ -43,22 +43,27 @@ export class SendSkycoinComponent implements OnInit {
   }
 
   send() {
+    if (this.button.disabled()) {
+      return;
+    }
+
     this.button.setLoading();
-    const wallet_id = this.form.value.wallet.meta.filename;
-    this.walletService.sendSkycoin(wallet_id, this.form.value.address, this.form.value.amount * 1000000)
+
+    const walletId = this.form.value.wallet.meta.filename;
+    const addressToSend = this.form.value.address;
+    const amountToSend = this.form.value.amount * 1000000;
+
+    this.walletService.sendSkycoin(walletId, addressToSend, amountToSend)
       .delay(1000)
-      .subscribe(
-        response => {
-          this.resetForm();
-          this.button.setSuccess();
-        },
-        error => {
-          const config = new MdSnackBarConfig();
-          config.duration = 300000;
-          this.snackbar.open(error['_body'], null, config);
-          this.button.setError(error);
-        }
-      );
+      .subscribe(() => {
+        this.resetForm();
+        this.button.setSuccess();
+      }, error => {
+        const config = new MdSnackBarConfig();
+        config.duration = 300000;
+        this.snackbar.open(error['_body'], null, config);
+        this.button.setError(error);
+      });
   }
 
   private initForm() {
