@@ -8,10 +8,10 @@ STATIC_DIR = src/gui/static
 ELECTRON_DIR = electron
 
 run:  ## Run the spo node. To add arguments, do 'make ARGS="--foo" run'.
-	go run cmd/spaco/spo.go --gui-dir="./${STATIC_DIR}" ${ARGS}
+	go run cmd/spo/spo.go --gui-dir="./${STATIC_DIR}" ${ARGS}
 
 run-help: ## Show spo node help
-	@go run cmd/spaco/spo.go --help
+	@go run cmd/spo/spo.go --help
 
 test: ## Run tests
 	go test ./cmd/...
