@@ -21,8 +21,11 @@ global.eval = function() { throw new Error('bad!!'); }
 const defaultURL = 'http://127.0.0.1:8620/';
 let currentURL;
 
-// Force everything localhost, in case of a leak
-app.commandLine.appendSwitch('host-rules', 'MAP * 127.0.0.1, EXCLUDE teller.spaco.io');
+// Force everything localhost, in case of a leak, except for the teller API endpoint. We should also allow access to the
+// Comodo certificate authority since teller API server does not send a complete certificate chain and Chromium requires
+// an extra download of the intermediate certificate "COMODO RSA Domain Validation Secure Server CA" in order to
+// complete the chain. See https://bugs.chromium.org/p/chromium/issues/detail?id=799722 for more details.
+app.commandLine.appendSwitch('host-resolver-rules', 'MAP * 127.0.0.1, EXCLUDE teller.spaco.io, EXCLUDE *.comodoca.com');
 app.commandLine.appendSwitch('ssl-version-fallback-min', 'tls1.2');
 app.commandLine.appendSwitch('--no-proxy-server');
 app.setAsDefaultProtocolClient('spo');
