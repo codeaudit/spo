@@ -40,24 +40,26 @@ export class AddDepositAddressComponent implements OnInit {
   }
 
   generate(tokenType) {
+    if(this.loading == true){
+      return;
+    }
     if (this.form.value.address === "") {
       alert("Please choose an address");
       return;
     }
     this.loading = true;
-    console.log("tokenType:"+tokenType+":"+this.form.value.address);
-    //return;
+    //console.log("tokenType:"+tokenType+":"+this.form.value.address);
     this.subscribeRef = this.purchaseService.generate(this.form.value.address, tokenType).subscribe((e: any) => {
-      console.log(e);
+      //console.log(e);
       if(e.code !== 0) {
         alert(e.errmsg);
         return;
       }
       this.showBindData(e.data);
+      this.loading = false;
       //this.dialogRef.close();
     }, (err) => {
       alert(err);  
-    }, () => {
       this.loading = false;
     });
   }
@@ -67,7 +69,7 @@ export class AddDepositAddressComponent implements OnInit {
   }
   
   showQRCode(addr) {
-    console.log(this.DepositQR)
+    //console.log(this.DepositQR)
     new QRCode(this.DepositQR.nativeElement, {
       text: addr,
       width: 200,
