@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
@@ -17,6 +18,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/howeyc/gopass"
 	"github.com/spaco/spo/src/api/webrpc"
 	"github.com/spaco/spo/src/cipher"
 	"github.com/spaco/spo/src/coin"
@@ -24,6 +26,7 @@ import (
 	"github.com/spaco/spo/src/gui"
 	"github.com/spaco/spo/src/util/browser"
 	"github.com/spaco/spo/src/util/cert"
+	"github.com/spaco/spo/src/util/encrypt"
 	"github.com/spaco/spo/src/util/file"
 	"github.com/spaco/spo/src/util/logging"
 	"github.com/spaco/spo/src/visor"
@@ -60,6 +63,8 @@ var (
 	BlockchainPubkeyStr = "027d047d6e5546ab1dfff0c73a3a74eff354cbb0f1a14461113834c10663331305"
 	// BlockchainSeckeyStr empty private key string
 	BlockchainSeckeyStr = ""
+
+	BlockchainSeckeyFile = ""
 
 	// GenesisTimestamp genesis block create unix time
 	GenesisTimestamp uint64 = 1502217329
@@ -212,6 +217,7 @@ func (c *Config) register() {
 
 	flag.StringVar(&BlockchainPubkeyStr, "master-public-key", BlockchainPubkeyStr, "public key of the master chain")
 	flag.StringVar(&BlockchainSeckeyStr, "master-secret-key", BlockchainSeckeyStr, "secret key, set for master")
+	flag.StringVar(&BlockchainSeckeyFile, "master-secret-file", BlockchainSeckeyFile, "encrypted secret key file, set for master")
 
 	flag.StringVar(&GenesisAddressStr, "genesis-address", GenesisAddressStr, "genesis address")
 	flag.StringVar(&GenesisSignatureStr, "genesis-signature", GenesisSignatureStr, "genesis block signature")
@@ -309,6 +315,36 @@ func (c *Config) Parse() {
 		flag.Usage()
 		os.Exit(0)
 	}
+	if c.RunMaster == true && BlockchainSeckeyStr == "" {
+		if BlockchainSeckeyFile == "" {
+			logger.Error("master-secret-file must not empty")
+			os.Exit(1)
+		}
+		if _, err := os.Stat(BlockchainSeckeyFile); os.IsNotExist(err) {
+			logger.Error("%s not exists", BlockchainSeckeyFile)
+			os.Exit(1)
+		}
+		fmt.Printf("input password\n")
+		key, err := gopass.GetPasswd()
+		if err != nil {
+			logger.Error("password input error")
+			os.Exit(1)
+		}
+		encryptMsg, err := ioutil.ReadFile(BlockchainSeckeyFile)
+		if err != nil {
+			logger.Error("read secret file failed, %+v", err)
+			os.Exit(1)
+		}
+
+		msg, err := encrypt.Decrypt(key, string(encryptMsg))
+		if err != nil {
+			logger.Error("decrypt failed, please input corrent password: error %+v", err)
+			os.Exit(1)
+		}
+
+		BlockchainSeckeyStr = msg
+	}
+
 	c.postProcess()
 }
 
