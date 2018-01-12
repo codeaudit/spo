@@ -6,8 +6,10 @@ import (
 	"sync"
 
 	"github.com/boltdb/bolt"
+
 	"github.com/spaco/spo/src/cipher"
 	"github.com/spaco/spo/src/coin"
+	"github.com/spaco/spo/src/util/fee"
 	"github.com/spaco/spo/src/visor/blockdb"
 )
 
@@ -19,8 +21,6 @@ var (
 
 	// ErrUnspentNotExist represents the error of unspent output in a tx does not exist
 	ErrUnspentNotExist = errors.New("Unspent output does not exist")
-	// ErrSignatureLost signature lost error
-	ErrSignatureLost = errors.New("signature lost")
 )
 
 const (
@@ -34,7 +34,7 @@ const (
 // are unlikely to occur. DebugLevel2 adds checks for conditions that
 // can only occur through programmer error and malice.
 
-// Note: a droplet is the base coin unit. Each Skycoin is one million droplets
+// Note: a droplet is the base coin unit. Each Spo is one million droplets
 
 //Termonology:
 // UXTO - unspent transaction outputs
@@ -522,7 +522,7 @@ func (bc Blockchain) TransactionFee(t *coin.Transaction) (uint64, error) {
 		return 0, err
 	}
 
-	return TransactionFee(t, headTime, inUxs)
+	return fee.TransactionFee(t, headTime, inUxs)
 }
 
 // verifySigs checks that BlockSigs state correspond with coin.Blockchain state

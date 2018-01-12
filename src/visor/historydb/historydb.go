@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/boltdb/bolt"
+
 	"github.com/spaco/spo/src/cipher"
 	"github.com/spaco/spo/src/coin"
 	"github.com/spaco/spo/src/util/logging"

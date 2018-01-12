@@ -7,7 +7,7 @@ import (
 	"github.com/spaco/spo/src/cipher"
 )
 
-// CreateAddresses genCount addresses deterministically from seed.  coinType is either CoinTypeBitcoin or CoinTypeSkycoin.
+// CreateAddresses genCount addresses deterministically from seed.  coinType is either CoinTypeBitcoin or CoinTypeSpo.
 // hideSecretKey will hide the secret key from the output.
 func CreateAddresses(coinType CoinType, seed string, genCount int, hideSecretKey bool) (*ReadableWallet, error) {
 	if genCount < 1 {

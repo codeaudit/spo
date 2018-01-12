@@ -13,6 +13,7 @@ import (
 
 	"github.com/spaco/spo/src/cipher"
 	"github.com/spaco/spo/src/daemon"
+	"github.com/spaco/spo/src/wallet"
 
 	"github.com/spaco/spo/src/util/file"
 	wh "github.com/spaco/spo/src/util/http" //http,json helpers
@@ -21,9 +22,7 @@ import (
 )
 
 var (
-	logger   = logging.MustGetLogger("gui")
-	listener net.Listener
-	quit     chan struct{}
+	logger = logging.MustGetLogger("gui")
 )
 
 const (
@@ -32,84 +31,92 @@ const (
 	indexPage   = "index.html"
 )
 
-// LaunchWebInterface begins listening on http://$host, for enabling remote web access
-// Does NOT use HTTPS
-func LaunchWebInterface(host, staticDir string, daemon *daemon.Daemon) error {
-	quit = make(chan struct{})
-	logger.Info("Starting web interface on http://%s", host)
-	logger.Warning("HTTPS not in use!")
+// Server exposes an HTTP API
+type Server struct {
+	mux      *http.ServeMux
+	listener net.Listener
+	done     chan struct{}
+}
+
+func create(host, staticDir string, daemon *daemon.Daemon) (*Server, error) {
 	appLoc, err := file.DetermineResourcePath(staticDir, resourceDir, devDir)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	logger.Info("Web resources directory: %s", appLoc)
 
-	listener, err = net.Listen("tcp", host)
-	if err != nil {
-		return err
-	}
-
-	// Runs http.Serve() in a goroutine
-	serve(listener, NewGUIMux(appLoc, daemon), quit)
-	return nil
+	return &Server{
+		mux:  NewServerMux(appLoc, daemon),
+		done: make(chan struct{}),
+	}, nil
 }
 
-// LaunchWebInterfaceHTTPS begins listening on https://$host, for enabling remote web access
-// Uses HTTPS
-func LaunchWebInterfaceHTTPS(host, staticDir string, daemon *daemon.Daemon, certFile, keyFile string) error {
-	quit = make(chan struct{})
-	logger.Info("Starting web interface on https://%s", host)
+// Create creates a new Server instance that listens on HTTP
+func Create(host, staticDir string, daemon *daemon.Daemon) (*Server, error) {
+	s, err := create(host, staticDir, daemon)
+	if err != nil {
+		return nil, err
+	}
+
+	logger.Warning("HTTPS not in use!")
+
+	s.listener, err = net.Listen("tcp", host)
+	if err != nil {
+		return nil, err
+	}
+
+	return s, nil
+}
+
+// CreateHTTPS creates a new Server instance that listens on HTTPS
+func CreateHTTPS(host, staticDir string, daemon *daemon.Daemon, certFile, keyFile string) (*Server, error) {
+	s, err := create(host, staticDir, daemon)
+	if err != nil {
+		return nil, err
+	}
+
 	logger.Info("Using %s for the certificate", certFile)
 	logger.Info("Using %s for the key", keyFile)
-	logger.Info("Web resources directory: %s", staticDir)
 
-	appLoc, err := file.DetermineResourcePath(staticDir, devDir, resourceDir)
+	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	certs := make([]tls.Certificate, 1)
-	if certs[0], err = tls.LoadX509KeyPair(certFile, keyFile); err != nil {
-		return err
-	}
-
-	listener, err = tls.Listen("tcp", host, &tls.Config{Certificates: certs})
+	s.listener, err = tls.Listen("tcp", host, &tls.Config{
+		Certificates: []tls.Certificate{cert},
+	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	// Runs http.Serve() in a goroutine
-	serve(listener, NewGUIMux(appLoc, daemon), quit)
+	return s, nil
+}
+
+// Serve serves the web interface on the configured host
+func (s *Server) Serve() error {
+	logger.Info("Starting web interface on %s", s.listener.Addr())
+	defer logger.Info("Web interface closed")
+	defer close(s.done)
+
+	if err := http.Serve(s.listener, s.mux); err != nil {
+		if err != http.ErrServerClosed {
+			return err
+		}
+	}
 	return nil
 }
 
-func serve(listener net.Listener, mux *http.ServeMux, q chan struct{}) {
-	go func() {
-		for {
-			if err := http.Serve(listener, mux); err != nil {
-				select {
-				case <-q:
-					return
-				default:
-				}
-				continue
-			}
-		}
-	}()
+// Shutdown closes the HTTP service. This can only be called after Serve or ServeHTTPS has been called.
+func (s *Server) Shutdown() {
+	logger.Info("Shutting down web interface")
+	defer logger.Info("Web interface shut down")
+	s.listener.Close()
+	<-s.done
 }
 
-// Shutdown close http service
-func Shutdown() {
-	if quit != nil {
-		// must close quit first
-		close(quit)
-		listener.Close()
-		listener = nil
-	}
-}
-
-// NewGUIMux creates an http.ServeMux with handlers registered
-func NewGUIMux(appLoc string, daemon *daemon.Daemon) *http.ServeMux {
+// NewServerMux creates an http.ServeMux with handlers registered
+func NewServerMux(appLoc string, daemon *daemon.Daemon) *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", newIndexHandler(appLoc))
 
@@ -122,9 +129,9 @@ func NewGUIMux(appLoc string, daemon *daemon.Daemon) *http.ServeMux {
 		mux.Handle(route, http.FileServer(http.Dir(appLoc)))
 	}
 
-	mux.HandleFunc("/version", versionHandler(daemon.Gateway))
-
 	mux.HandleFunc("/logs", getLogsHandler(&daemon.LogBuff))
+
+	mux.HandleFunc("/version", versionHandler(daemon.Gateway))
 
 	//get set of unspent outputs
 	mux.HandleFunc("/outputs", getOutputsHandler(daemon.Gateway))
@@ -235,14 +242,20 @@ func getBalanceHandler(gateway *daemon.Gateway) http.HandlerFunc {
 			addrs = append(addrs, a)
 		}
 
-		bal, err := gateway.GetAddressesBalance(addrs)
+		bals, err := gateway.GetBalanceOfAddrs(addrs)
 		if err != nil {
 			logger.Error("Get balance failed: %v", err)
 			wh.Error500(w)
 			return
 		}
 
-		wh.SendOr404(w, bal)
+		var balance wallet.BalancePair
+		for _, bal := range bals {
+			balance.Confirmed = balance.Confirmed.Add(bal.Confirmed)
+			balance.Predicted = balance.Predicted.Add(bal.Predicted)
+		}
+
+		wh.SendOr404(w, balance)
 	}
 }
 
@@ -259,7 +272,7 @@ func versionHandler(gateway *daemon.Gateway) http.HandlerFunc {
 
 /*
 attrActualLog remove color char in log
-origin: "\u001b[36m[skycoin.daemon:DEBUG] Trying to connect to 47.88.33.156:6000\u001b[0m",
+origin: "\u001b[36m[spo.daemon:DEBUG] Trying to connect to 47.88.33.156:6000\u001b[0m",
 */
 func attrActualLog(logInfo string) string {
 	//return logInfo

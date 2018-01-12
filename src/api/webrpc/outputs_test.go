@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/spaco/spo/src/cipher"
 	"github.com/spaco/spo/src/coin"
@@ -59,7 +60,7 @@ func decodeOutputStr(str string) visor.ReadableOutputSet {
 	return outs.Outputs
 }
 
-func filterOut(outs []coin.UxOut, f func(out coin.UxOut) bool) visor.ReadableOutputSet {
+func filterOut(headTime uint64, outs []coin.UxOut, f func(out coin.UxOut) bool) visor.ReadableOutputSet {
 	os := []coin.UxOut{}
 	for _, o := range outs {
 		if f(o) {
@@ -67,7 +68,7 @@ func filterOut(outs []coin.UxOut, f func(out coin.UxOut) bool) visor.ReadableOut
 		}
 	}
 
-	headOuts, err := visor.NewReadableOutputs(os)
+	headOuts, err := visor.NewReadableOutputs(headTime, os)
 	if err != nil {
 		panic(err)
 	}
@@ -84,6 +85,8 @@ func Test_getOutputsHandler(t *testing.T) {
 		uxouts[i] = coin.UxOut{}
 		uxouts[i].Body.Address = addrs[i]
 	}
+
+	headTime := uint64(time.Now().UTC().Unix())
 
 	type args struct {
 		addrs   []string
@@ -113,7 +116,7 @@ func Test_getOutputsHandler(t *testing.T) {
 				addrs:   []string{addrs[0].String()},
 				gateway: &fakeGateway{uxouts: uxouts},
 			},
-			makeSuccessResponse("1", OutputsResult{filterOut(uxouts[:], func(out coin.UxOut) bool {
+			makeSuccessResponse("1", OutputsResult{filterOut(headTime, uxouts[:], func(out coin.UxOut) bool {
 				return out.Body.Address == addrs[0]
 			})}),
 		},
@@ -123,7 +126,7 @@ func Test_getOutputsHandler(t *testing.T) {
 				addrs:   []string{addrs[0].String(), addrs[1].String()},
 				gateway: &fakeGateway{uxouts: uxouts},
 			},
-			makeSuccessResponse("1", OutputsResult{filterOut(uxouts, func(out coin.UxOut) bool {
+			makeSuccessResponse("1", OutputsResult{filterOut(headTime, uxouts, func(out coin.UxOut) bool {
 				return out.Body.Address == addrs[0] || out.Body.Address == addrs[1]
 			})}),
 		},

@@ -1,16 +1,12 @@
 # Spaco desktop client
 
 The Spaco wallet ships with a web interface which can be ran from the browser and/or Electron.
-=======
 
 The project contains both the source (src) and target (dist) files of this web interface.
-
-This wallet is clone from Skycoin wallet.
 
 ## Prerequisites
 
 The Spaco web interface requires Node 6.9.0 or higher, together with NPM 3 or higher.
-=======
 
 ## Installation
 

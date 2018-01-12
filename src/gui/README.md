@@ -9,6 +9,10 @@ Apis service port is `8620`.
 * [Explorer apis](#explorer-apis)
 * [Uxout apis](#uxout-apis)
 * [Coin supply api](#coin-supply-informations)
+* [Richlist api](#richlist-show-top-n-addresses-by-uxouts)
+* [Addresscount api](#addresscount-show-count-of-unique-address)
+* [Log api](#wallet-log-api)
+
 
 ## Simple query apis
 
@@ -36,7 +40,7 @@ result:
 
 ### Get balance of addresses
 
-```bash
+```
 URI: /balance
 Method: GET
 Args:
@@ -93,6 +97,7 @@ result:
     "head_outputs": [
         {
             "hash": "7669ff7350d2c70a88093431a7b30d3e69dda2319dcb048aa80fa0d19e12ebe0",
+            "block_seq": 22,
             "src_tx": "b51e1933f286c4f03d73e8966186bafb25f64053db8514327291e690ae8aafa5",
             "address": "6dkVxyKFbFKg9Vdg6HPg1UANLByYRqkrdY",
             "coins": "2.000000",
@@ -108,7 +113,7 @@ result:
 
 ### Generate wallet seed
 
-```bash
+```
 URI: /wallet/newSeed
 Method: GET
 ```
@@ -121,25 +126,27 @@ curl http://127.0.0.1:8620/wallet/newSeed
 
 result:
 
-```bash
+```json
 {
-seed: "helmet van actor peanut differ icon trial glare member cancel marble rack"
+    "seed": "helmet van actor peanut differ icon trial glare member cancel marble rack"
 }
 ```
 
-### Create wallet
+### Create a wallet from seed
 
-```bash
+```
 URI: /wallet/create
 Method: POST
 Args:
-    seed [optional]
+    seed: wallet seed [required]
+    label: wallet label [required]
+    scan: the number of addresses to scan ahead for balances [optional, must be > 0]
 ```
 
 example:
 
 ```bash
-curl -X POST http://127.0.0.1:8620/wallet/create
+curl http://127.0.0.1:8620/wallet/create -d "seed=$seed&label=$label&scan=5"
 ```
 
 result:
@@ -147,7 +154,7 @@ result:
 ```json
 {
     "meta": {
-        "coin": "SPO",
+        "coin": "spo",
         "filename": "2017_05_09_d554.wlt",
         "label": "",
         "lastSeed": "4795eaf6890c0ce1d67daf87d2f85523b1d19245a7a81a38c757fc4a7e3cae3e",
@@ -168,7 +175,7 @@ result:
 
 ### Generate new address in wallet
 
-```bash
+```
 URI: /wallet/newAddress
 Method: POST
 Args:
@@ -191,7 +198,7 @@ result:
 
 ### Get wallet balance
 
-```bash
+```
 URI: /wallet/balance
 Method: GET
 Args:
@@ -221,13 +228,24 @@ result:
 
 ### Spend coins from wallet
 
-```bash
+```
 URI: /wallet/spend
 Method: POST
 Args:
     id: wallet id
     dst: recipient address
     coins: number of coins to send, in droplets. 1 coin equals 1e6 droplets.
+Response:
+    balance: new balance of the wallet
+    txn: spent transaction
+    error: an error that may have occured after broadcast the transaction to the network
+           if this field is not empty, the spend succeeded, but the response data could not be prepared
+Statuses:
+    200: successful spend. NOTE: the response may include an "error" field. if this occurs, the spend succeeded
+         but the response data could not be prepared. The client should NOT spend again.
+    400: Invalid query params, wallet lacks enough coin hours, insufficient balance
+    404: wallet does not exist
+    500: other errors
 ```
 
 example, send 1 coin to `2iVtHS5ye99Km5PonsB42No3pQRGEURmxyc` from wallet `2017_05_09_ea42.wlt`:
@@ -287,7 +305,7 @@ result:
 
 ### Get unconfirmed transactions
 
-```bash
+```
 URI: /pendingTxs
 Method: GET
 ```
@@ -341,7 +359,7 @@ result:
 
 ### Get transaction info by id
 
-```bash
+```
 URI: /transaction
 Method: GET
 Args:
@@ -391,7 +409,7 @@ result:
 
 ### Get raw transaction by id
 
-```bash
+```
 URI: /rawtx
 Method: GET
 ```
@@ -411,7 +429,7 @@ b700000000075f255d42ddd2fb228fe488b8b468526810db7a144aeed1fd091e3fd404626e010000
 
 ### Inject raw transaction
 
-```bash
+```
 URI: /injectTransaction
 Method: POST
 Content-Type: application/json
@@ -457,11 +475,11 @@ result:
     "highest": 2760,
     "peers": [
     {
-        "address": "35.157.164.126:8848",
+        "address": "35.157.164.126:6000",
         "height": 2760
     },
     {
-        "address": "63.142.253.76:8848",
+        "address": "63.142.253.76:6000",
         "height": 2760
     },
     ]
@@ -856,9 +874,9 @@ result:
 ]
 ```
 
-## Token supply informations
+## Coin supply informations
 
-```bash
+```
 URI: /coinSupply
 Method: GET
 ```
@@ -873,112 +891,470 @@ result:
 
 ```json
 {
-    "current_supply": "5847530.000000",
-    "total_supply": "30000000.000000",
-    "max_supply": "100000000.000000",
+    "current_supply": "31510000.000000",
+    "total_supply": "250000000.000000",
+    "max_supply": "2800000000.000000",
     "unlocked_distribution_addresses": [
-        "R6aHqKWSQfvpdo2fGSrq4F1RYXkBWR9HHJ",
-        "2EYM4WFHe4Dgz6kjAdUkM6Etep7ruz2ia6h",
-        "25aGyzypSA3T9K6rgPUv1ouR13efNPtWP5m",
-        "ix44h3cojvN6nqGcdpy62X7Rw6Ahnr3Thk",
-        "AYV8KEBEAPCg8a59cHgqHMqYHP9nVgQDyW",
-        "2Nu5Jv5Wp3RYGJU1EkjWFFHnebxMx1GjfkF",
-        "2THDupTBEo7UqB6dsVizkYUvkKq82Qn4gjf",
-        "tWZ11Nvor9parjg4FkwxNVcby59WVTw2iL",
-        "m2joQiJRZnj3jN6NsoKNxaxzUTijkdRoSR",
-        "8yf8PAQqU2cDj8Yzgz3LgBEyDqjvCh2xR7",
-        "sgB3n11ZPUYHToju6TWMpUZTUcKvQnoFMJ",
-        "2UYPbDBnHUEc67e7qD4eXtQQ6zfU2cyvAvk",
-        "wybwGC9rhm8ZssBuzpy5goXrAdE31MPdsj",
-        "JbM25o7kY7hqJZt3WGYu9pHZFCpA9TCR6t",
-        "2efrft5Lnwjtk7F1p9d7BnPd72zko2hQWNi",
-        "Syzmb3MiMoiNVpqFdQ38hWgffHg86D2J4e",
-        "2g3GUmTQooLrNHaRDhKtLU8rWLz36Beow7F",
-        "D3phtGr9iv6238b3zYXq6VgwrzwvfRzWZQ",
-        "gpqsFSuMCZmsjPc6Rtgy1FmLx424tH86My",
-        "2EUF3GPEUmfocnUc1w6YPtqXVCy3UZA4rAq",
-        "TtAaxB3qGz5zEAhhiGkBY9VPV7cekhvRYS",
-        "2fM5gVpi7XaiMPm4i29zddTNkmrKe6TzhVZ",
-        "ix3NDKgxfYYANKAb5kbmwBYXPrkAsha7uG",
-        "2RkPshpFFrkuaP98GprLtgHFTGvPY5e6wCK",
-        "Ak1qCDNudRxZVvcW6YDAdD9jpYNNStAVqm",
-        "2eZYSbzBKJ7QCL4kd5LSqV478rJQGb4UNkf",
-        "KPfqM6S96WtRLMuSy4XLfVwymVqivdcDoM",
-        "5B98bU1nsedGJBdRD5wLtq7Z8t8ZXio8u5",
-        "2iZWk5tmBynWxj2PpAFyiZzEws9qSnG3a6n",
-        "XUGdPaVnMh7jtzPe3zkrf9FKh5nztFnQU5"
+        "bRhJEVGunwNBs8Jtx2pogb831JqUhifokP",
+        "2b1HJdnpAykBdZXyHRRGQ1tTRxFw1jgD1P3",
+        "2ircJqBsANpor6LwssNZ9twgfuWKmcGoSk4",
+        "2AFxdV1J1ZxjuXzeU2E1eEHyRiKFh2SVKHN",
+        "uSuW26CuDNwC8HG4FbyxWpeh9pezpk9T1N",
+        "2WenFpcN9T37kx1XnmTNnB2RUZsKE7hemQy",
+        "bRCWuhGkyy7ScLcisbvp6zJXvbLD8a8HUa",
+        "2Cvq9EqF3rYfRbiHJEwNjLYkn7Um86MAaP7",
+        "2L7XTk3mNZXVgUzzG6MYxKyjssJkLsKyerw",
+        "2QHJjJ5YPwjBJSu28HeoVFa1e2iTLiZmqUS",
+        "2FkdR9nrxjUmt9LjdoFrqa5cL4kjXJ49G9X",
+        "4hcXUcGFemfxNyF5LnVTQ7cHNDXFbVm2ZN",
+        "2Zo3bqBVyyV53v6BpNdx4gVRSH4JXAXYkgT",
+        "ELkipdznoXooV97aaKV9shmRMLqTmWT1tx",
+        "2HjSKyjgJYybkSUitphbavQ2iueKowk3LGf",
+        "ScneKQsBYfs7hgdj8v1xpkk9KU3Z5VPVXM",
+        "2LmWA7wiLTbBJde1u7iux2JxLqMnKycxV1S",
+        "2hqMK11rcRLoaA24z5bGjmY5AzWFZAbvuGR",
+        "2YPb9N7pjXZhoG6F5tvB6mzGxhqdKz6DjFi",
+        "BttA2aEDZdN7hR2NJMw8Vn5UKrgJxgWWGo",
+        "27ebngLYti6KZHExM9PTXk7ZYibUEYDpPx6",
+        "9HyLq9Dmd4KofoW6BPdmVEsa1nDoJekqNc",
+        "2PJ9yVFapFUCHZChz5AGJC8Ums68APVBosc",
+        "txmKDbEyj97NsrtGFKM4BxMsCg2bBC6iwy",
+        "YaZRiVFJ2yGc5iVUvscAQh1hAh6ze7EN2s"
     ],
     "locked_distribution_addresses": [
-        "hSNgHgewJme8uaHrEuKubHYtYSDckD6hpf",
-        "2DeK765jLgnMweYrMp1NaYHfzxumfR1PaQN",
-        "orrAssY5V2HuQAbW9K6WktFrGieq2m23pr",
-        "4Ebf4PkG9QEnQTm4MVvaZvJV6Y9av3jhgb",
-        "7Uf5xJ3GkiEKaLxC2WmJ1t6SeekJeBdJfu",
-        "oz4ytDKbCqpgjW3LPc52pW2CaK2gxCcWmL",
-        "2ex5Z7TufQ5Z8xv5mXe53fSQRfUr35SSo7Q",
-        "WV2ap7ZubTxeDdmEZ1Xo7ufGMkekLWikJu",
-        "ckCTV4r1pNuz6j2VBRHhaJN9HsCLY7muLV",
-        "MXJx96ZJVSjktgeYZpVK8vn1H3xWP8ooq5",
-        "wyQVmno9aBJZmQ99nDSLoYWwp7YDJCWsrH",
-        "2cc9wKxCsFNRkoAQDAoHke3ZoyL1mSV14cj",
-        "29k9g3F5AYfVaa1joE1PpZjBED6hQXes8Mm",
-        "2XPLzz4ZLf1A9ykyTCjW5gEmVjnWa8CuatH",
-        "iH7DqqojTgUn2JxmY9hgFp165Nk7wKfan9",
-        "RJzzwUs3c9C8Y7NFYzNfFoqiUKeBhBfPki",
-        "2W2cGyiCRM4nwmmiGPgMuGaPGeBzEm7VZPn",
-        "ALJVNKYL7WGxFBSriiZuwZKWD4b7fbV1od",
-        "tBaeg9zE2sgmw5ZQENaPPYd6jfwpVpGTzS",
-        "2hdTw5Hk3rsgpZjvk8TyKcCZoRVXU5QVrUt",
-        "A1QU6jKq8YgTP79M8fwZNHUZc7hConFKmy",
-        "q9RkXoty3X1fuaypDDRUi78rWgJWYJMmpJ",
-        "2Xvm6is5cAPA85xnSYXDuAqiRyoXiky5RaD",
-        "4CW2CPJEzxhn2PS4JoSLoWGL5QQ7dL2eji",
-        "24EG6uTzL7DHNzcwsygYGRR1nfu5kco7AZ1",
-        "KghGnWw5fppTrqHSERXZf61yf7GkuQdCnV",
-        "2WojewRA3LbpyXTP9ANy8CZqJMgmyNm3MDr",
-        "2BsMfywmGV3M2CoDA112Rs7ZBkiMHfy9X11",
-        "kK1Q4gPyYfVVMzQtAPRzL8qXMqJ67Y7tKs",
-        "28J4mx8xfUtM92DbQ6i2Jmqw5J7dNivfroN",
-        "gQvgyG1djgtftoCVrSZmsRxr7okD4LheKw",
-        "3iFGBKapAWWzbiGFSr5ScbhrEPm6Esyvia",
-        "NFW2akQH2vu7AqkQXxFz2P5vkXTWkSqrSm",
-        "2MQJjLnWRp9eHh6MpCwpiUeshhtmri12mci",
-        "2QjRQUMyL6iodtHP9zKmxCNYZ7k3jxtk49C",
-        "USdfKy7B6oFNoauHWMmoCA7ND9rHqYw2Mf",
-        "cA49et9WtptYHf6wA1F8qqVgH3kS5jJ9vK",
-        "qaJT9TjcMi46sTKcgwRQU8o5Lw2Ea1gC4N",
-        "22pyn5RyhqtTQu4obYjuWYRNNw4i54L8xVr",
-        "22dkmukC6iH4FFLBmHne6modJZZQ3MC9BAT",
-        "z6CJZfYLvmd41GRVE8HASjRcy5hqbpHZvE",
-        "GEBWJ2KpRQDBTCCtvnaAJV2cYurgXS8pta",
-        "oS8fbEm82cprmAeineBeDkaKd7QownDZQh",
-        "rQpAs1LVQdphyj9ipEAuukAoj9kNpSP8cM",
-        "6NSJKsPxmqipGAfFFhUKbkopjrvEESTX3j",
-        "cuC68ycVXmD2EBzYFNYQ6akhKGrh3FGjSf",
-        "bw4wtYU8toepomrhWP2p8UFYfHBbvEV425",
-        "HvgNmDz5jD39Gwmi9VfDY1iYMhZUpZ8GKz",
-        "SbApuZAYquWP3Q6iD51BcMBQjuApYEkRVf",
-        "2Ugii5yxJgLzC59jV1vF8GK7UBZdvxwobeJ",
-        "21N2iJ1qnQRiJWcEqNRxXwfNp8QcmiyhtPy",
-        "9TC4RGs6AtFUsbcVWnSoCdoCpSfM66ALAc",
-        "oQzn55UWG4iMcY9bTNb27aTnRdfiGHAwbD",
-        "2GCdwsRpQhcf8SQcynFrMVDM26Bbj6sgv9M",
-        "2NRFe7REtSmaM2qAgZeG45hC8EtVGV2QjeB",
-        "25RGnhN7VojHUTvQBJA9nBT5y1qTQGULMzR",
-        "26uCBDfF8E2PJU2Dzz2ysgKwv9m4BhodTz9",
-        "Wkvima5cF7DDFdmJQqcdq8Syaq9DuAJJRD",
-        "286hSoJYxvENFSHwG51ZbmKaochLJyq4ERQ",
-        "FEGxF3HPoM2HCWHn82tyeh9o7vEQq5ySGE",
-        "h38DxNxGhWGTq9p5tJnN5r4Fwnn85Krrb6",
-        "2c1UU8J6Y3kL4cmQh21Tj8wkzidCiZxwdwd",
-        "2bJ32KuGmjmwKyAtzWdLFpXNM6t83CCPLq5",
-        "2fi8oLC9zfVVGnzzQtu3Y3rffS65Hiz6QHo",
-        "TKD93RxFr2Am44TntLiJQus4qcEwTtvEEQ",
-        "zMDywYdGEDtTSvWnCyc3qsYHWwj9ogws74",
-        "25NbotTka7TwtbXUpSCQD8RMgHKspyDubXJ",
-        "2ayCELBERubQWH5QxUr3cTxrYpidvUAzsSw",
-        "RMTCwLiYDKEAiJu5ekHL1NQ8UKHi5ozCPg",
-        "ejJjiCwp86ykmFr5iTJ8LxQXJ2wJPTYmkm"
+        "21LtZErKQsucga7JQy2chAGBhVM1NQarUTR",
+        "eN139Ef2EXoAMdsJta778Cus27hPapeNuE",
+        "TFvHQZyko4bAGtak58ScB1RkWQFxSRPfdM",
+        "2TdgVEvki55wVCV15nT3qogLDLuQfpn26Fm",
+        "2EkM32H9rrJBmEDCejJnUqUVMy3W71TfYFr",
+        "hex7ZVQMmDPxZ6AEyG81Js9LksvLCn3XR3",
+        "3GRCuqruvBCyFczgK3DMG6aLbtdMhJaB2z",
+        "2STxoB8x93gg4sZ3S5F4C8DxmDxa28wtMnV",
+        "2EzJ33mYUAcTESDB9utSUdUBs3bZ7289C4n",
+        "ZMY5QESmpyqmMBy3aq9s8XSy6hE6zx1xdY",
+        "o1X1SpFGiqPeGSp86JkozVeLV5AB75Vziv",
+        "5N4wJPogpLoVbVm7tvgyWxwAZTW4NwRAVy",
+        "APdA1Mq5qsJ1YJWd8YQsWXrNctYTn4BFP1",
+        "R4vm6papR9ceNMrfHTG7qCERhYsTmDQ63x",
+        "2SVKyTb5ehEuBAG7M2jakfYUZWGrQkdaoX7",
+        "goYRfojX7U5ieLYKZpH2XT1HntgoUVxwDB",
+        "2NgKwE1MpXZjQFGCSTxAcmxWuQ7mAckrHvJ",
+        "Qd1xMSQXVVzYAFbxSLt4wF6paZp3eBGTRZ",
+        "mqnZCTMkq5i7VdZreaQCbWpDr9vDHokmw5",
+        "2JdFoCyjyvyosb8wRZmLU37Gqd36zcDuHNe",
+        "phzYxNUvMXYScfPEVWKykA89JmvejsGUBN",
+        "TC4qGd8CJaRsAP8GeDauucBpaGzcWEvroa",
+        "22GAT5y2fuEZeHPkaUwthp23gjfsnqrc7nU",
+        "RcYwRHG5nkET4ARAVEfKSjZSGMEBbTAqQ8",
+        "2Djm1tiP7ddNHPefFmiPU1bTBtJ7eXTVVMm",
+        "Pcz1PWtqgUBsFrzPkgkk8k7vk32hdkWzvf",
+        "2MT6yRa1Z8oWULBcYkbNXN2cAZB8xxmW357",
+        "qedFwAPhSN7NMRtP2fKb1GFNAtfTLjF24r",
+        "znLTAU4c9VprwquKRKzSFTBNL3boMM8BXW",
+        "wtsoA8DPxvEukbZLDAtdxhqkHaLyspoSUG",
+        "2eehZgS6UQt1i7CJoMzKcEuM6jsFi64T7ua",
+        "J1ZP4XwL9wUSgGmPzr3QFj92m7FgirsDp2",
+        "nrffPNVMDb2tWwMnnhgoRDEHhJLaQBAsi8",
+        "2FUnHArqyQDMsKcrRznWRWX47tmvDi8BbPv",
+        "2BToDyTnqYH5aZxzJwvCYoLBiE2mRdsApc",
+        "T5pcyi7r6gQWM1Z8bg6zH3z1PtKccmiZeq",
+        "2T1Gbob6z6Ck62njTf7dZdapeLGWKoi67TK",
+        "VCzjQFmMoxjiqNXaAGYRsctZGYbEYVuJmW",
+        "2dVMrisaPHau7nikUUxzkCLt3KaBhxB77vn",
+        "eg7NuKXWTJVyZ4Rcr7WQxK2qzUoHzBArTR",
+        "GzFhfRdz2gMhNvnCueJ5h4WLPjE3TvKC58",
+        "hsBTLx1SV1aj72KM4PTrFBSKsDEbt2XYPw",
+        "4feEcntFEX2BUD3EVUbzQTBhVrztgwq8oq",
+        "2NWqPi5vVHc8hY4D4iK2yUYF331TzNuVtpT",
+        "2PawH4bvZZcrQdc7ERp1eAc1B9CpcXaMmRi",
+        "FiZTj47GUCpUQ7ayCqTDxNpR88ABscBArJ",
+        "LCJw9BrxsjdSSzQUbs7sCywS1TTDhGWtRu",
+        "2ACXcoHE6FVb2dd9nh4igh4rWjQtVQDxnHX",
+        "8gXDWYCjX7uLBGQbADa1VY552MqD8eeAbQ",
+        "E9gBBn11W22F8vPVaQMnMuT5DPv2L1upkv",
+        "2YFU2HWB9kcdz7HteRYK2G9ZV3M6Tg3x47e",
+        "2HZVqDvVxPjQLZ2rHAEsa3f9UfDCsBftPHu",
+        "tiyAoZ6WfBgacKNjtWhJwVfLJcy1CrBxjy",
+        "adnpVEsprbtdit3QTxJ6bXtaNmxQpBquDp",
+        "PCSHdzqbHKy3y7WJkqfcMkmZBMqtYEZiu7",
+        "n1aCioquWEdZ4ajHmX2jyGtwP95f8F5p91",
+        "2i2DqDfADp43Ue1gPvf94C9ZpkdW6g5mWid",
+        "kRMDBxu2soduQe8itaWoNRj5yX28NMSqFb",
+        "2moG8hfWUcgcXTDr5pNSGEqzEzKovJHbfV1",
+        "Ech7gHemCpPYNDSxJA7nuTL3QecbX9LXDR",
+        "HGQpFLkAvKGTdQqRht1NVU6LfGkg1end8o",
+        "PiVEfGwixeECxD3PHuVAYxka4d4b3aJV1w",
+        "Ldvitx3or7HuvE5np6a3xJNT3Vq3MQHnRg",
+        "2PVD39YQXhCP7S4jizAdQQxfXjubUdKvTpL",
+        "2A18amgqgAjVBgC1GugGauP4Vy9w5WSEaxw",
+        "txuAmS9atjUwTg38HZHifAN9pVZ92WNegu",
+        "KQuVUrfCyRY5rwAtHdzeWn19YVWCPE3ZBW",
+        "2P3xosriAwNi7fgKgNJc3EaGpVUNhGPPFRr",
+        "ghKfz92v7RanF2xVrE5hD3C6JwemZQgNn",
+        "2MDLetXUmy3VQfHFhMA3zMQbZ7WNgNC4UYJ",
+        "5yjxgEPzu3tbRaum4sKTJy7gi1jgDC23dh",
+        "2Lktp8Q9jz3oebwDKbhymE3GAVvoELhVoms",
+        "wESxGi34RKJMozknduJiUAmTpwKbnqPMtc",
+        "2S6BMLzD6Fm5SLzKS6E2JvWdjRH2RVmiiE7",
+        "UXYmB3W5MPkmHjCFpZVPnRjaB7FiFEJtH5",
+        "2DihydNzykzYq3D6AWAjafUgA3FATm28xCd",
+        "2gchvg3qenoHFqHh99N7CjErSBqFAft7Bhk",
+        "24SK8vz4C7P6MC4rkTrVCyMwhsQG6yRGy54",
+        "2SaDXt96YfA1EtcECRWv184dhAVRdH2ueWU",
+        "xAjqp8TZvbLF3vtgTq8nyyM8h4Y8gSnHG6",
+        "nMW7XZUvCQSnauyK3ByujPAU3nfCUdy3Pb",
+        "2VR7udxTUDw6wXrkq172uUpLifnX9KaTjTG",
+        "xmiDRywB1LeApPgXg2enSsWwioeqjbFuWk",
+        "2WuUCE5RwiS4UjF6Vt7ZWC9MfcyuXH4zDpb",
+        "2KhqVuvtkzA7DU922aymSW9VF7X4iuNCxwN",
+        "xmcknTven7YckxpkodtBZkwfa7NVFFsrYF",
+        "vfGNYtUqdgqfFekLuHUqFp6BdKh6JyLder",
+        "fAYG5ESqjvLMMuspjK8zXutUBP3emCt8zn",
+        "D3t6D1GAVmCEJ7a1PgKkdoGsw6vyCaPt4K",
+        "2fSQ4yAhP9iu9NVe2qvkNGQHWaB6V5D12MW",
+        "UrBr2NKRfLZkhozJ66nEz4WcDWGEDUWKgV",
+        "MeqZU79PdUwHkzfQS6NqhMUwhP3qNJcE1o",
+        "fPRAQyp92oAZW34ocqKqtuVEBAHBfgS6i4",
+        "2aCae8EQN8hT76P9CVLk6mP8moivJHc5EkN",
+        "24V9j23tkVkN8yyFtsG3D8aLZjn6C4ug4ed",
+        "TY9E49vCt97LQPSAbChApRmpdeDGaeTPtG",
+        "yihg6wMUsVFrHpMn3hvF3JdkvpgihmaC8K",
+        "ujwaugBsr3rSZKXrRRiqRCXhxJo8rP32v1",
+        "aBmokr2v6BrbWxDMrVQM3Tci82LKtPtfVx",
+        "ZZWa6Tqxv5efutK28yMJyJnJToS8nQ1QNW",
+        "2Fivgbf2SThrvsDfTow7uPANtuqQ1TRtdbz",
+        "oZAsNiDuJb4w2kHwBbntvAj2nRwwiSTFZ8",
+        "uzDiiBq3DeWcNf9AAc3vhcxEkyxNNQfZGa",
+        "SKwEQXCEzEGjpFhDtpJgB3htRcns2DjrZQ",
+        "2TrNDnQB6QxsUiJAFJzDHihQox6rvw1Fhh7",
+        "oZAxtUzXCLXWsb7bHxXAtf9fQa9VVg4R17",
+        "2kS8UFJPr4k2rDCHrKnqEyY5KCHATn3WAWF",
+        "L1az6BZf5m2LiAgF411ArjE68P7bE74dF9",
+        "ChvMaNFLadB7FTdMHDTDbZL5xRBsrUqwdY",
+        "2gWr7224GinDQwHPkCjFjuUNmDBnQqf3qNX",
+        "sZS79d1GuiJXKfWixP1cpVf1VPXZKC6bry",
+        "ZTDLymFo1zadXpF9CbvFUZGPj69w888wMZ",
+        "2UWrs4s2zAp3pa4s1ueCMwdFeazi9zzev5J",
+        "2XrUn6BsRundm82mEMF9d4BZX6gjmnMkpqt",
+        "2Zd4dKceiryoTf4kahuhreZYFqLhGwGWQQt",
+        "6MawZSRPpSSokKTMrXbeBapyw5fH5AGkDP",
+        "QyHvNhLaaUTPFoY7U9gBeiUH24F9SYCLwW",
+        "fB5HMXDw8nTC2Th2uVCvLw3yacmnbXvnWX",
+        "znhYPuevKtmuKYUD8E1PYwZomjKJNKUx29",
+        "2aRFMGHvGAkeoSYDLvKwD2uCJE5AizKM1p8",
+        "8HSNRJHy5P2PpZYWHfbfTjkz7mcGNCPp5f",
+        "2Mv9x4AmgvEMyVgvSfooFuUXdoJcNEAgsXS",
+        "2HdgxEJDxARgSQFZZAHkKHjkkQWa8PW5Qk3",
+        "UhnGXHLcSacDnE13n1qwUUNnJAZT1DQgvD",
+        "xg16s3oWVMfdDf3176PZdHAt6kYV6gtLMU",
+        "2gWsKHVr8a8yNbVWms9KvdZgZuL8EjYyAir",
+        "wVpDHATU4XQ3dAUVxsB2kT64T17e2r49Ji",
+        "2Dyn136RN8HtDPMEDiAUgaiPEU9rdJQP1J1",
+        "PbJW7wn1VcJisWNXar3w4HekXK7sr4SnvX",
+        "2U5u1mu3YSDNnKSwbUuVMSQCVoTx2RdjBPi",
+        "AnrEKKbRNbeYCf3F5dgGQSYaPUQioSDrpK",
+        "rLK3gumhz7mLRDSTxwCmSEMkCtXHk4PfJe",
+        "rqzTPARP6WetzniiNSP3AeCGYNMZU1JfRG",
+        "Tke4XKKn4SLGn9c4C3g9UNJPSunSgKheTM",
+        "2bjZ1xGaBQJE18jRPRmxaGA2DXXgM8NsUJd",
+        "o62jYbfb3BCCXr1SD2myhF2T5TNL3t7dRz",
+        "6Gg3XtenQAenenJci43DWLe5LaehAVrvTL",
+        "Ye8dZvqWQE6eYRbpbj9wJZWVtQwbRukNJi",
+        "x3XZvQ6oFxnjwsoQy59MwqEwSNWDWaBfSi",
+        "2RPuXJzQmsMfg2YMepxEbYeX8vmJQCbD6Rg",
+        "2m3oWbuqntMRGvTpjKjvv1Sjk21rfk57naS",
+        "2JATanSkpcSDBMW56xvb4D6Ujm4eHBmrqsg",
+        "2FdoA3gvzNDz8L64WAKzWPm818cA98oLnC3",
+        "2mqet3fPE7h1kGCui9nWcQxLw37xSv3KF3Z",
+        "2CXeEBzHJSnyaYUnR5z3ca1eN2egM49M8z4",
+        "pcaFwMxNvw6fZQR6uTaGiSrgho8VxE4nu6",
+        "hgHbFcYBYTyzVwfGCVwZKVB4ZnLVdNVnxH",
+        "26Esxno2M9woXc1PjKUHgJp7DJo6Azrd4Bw",
+        "sfCJvxJ7Tz81iTcJGY9g8HkcDWkbPMf7M5",
+        "25gwdyUXFsCtbgt5LKY26xhieH24kmjM81L",
+        "2erxRBLUuxWHmJu6ZpfMA6HM797pDKDi8AJ",
+        "b5EJUivJHg7ctu1EyEanoRR79Cds5TDSU8",
+        "2PeJEtunhggrwD2reS97RtBXuPnZMB5FXHr",
+        "qP5Fx2sqq4SVQsUwQ9HB6tr46yyFzaLhwT",
+        "2FSuboSpWgj8Vsb9J5zbTqhi6se3qDepGw8",
+        "8FDf5qSUSL8PiycSaoyfomFJyvShPVf6hB",
+        "2gDxB4CjpV6fURvdnaJ4rCAHLkb45vnqYbw",
+        "1JuMh1mhLwtf7NwTwtLu8vDdWzySY98d4F",
+        "2RcnnDogtRaTqDBA4VnhTumHe191qbbupfu",
+        "YYeqcyhPHQ5BSESMKK4HwdszySV1QLjffv",
+        "2bWpNz9U8g8gSFHdmWzLo5NwkLSecX3uNrZ",
+        "2NUU6hKaT46Assf1ukuJ5mhqb2NEYbpyZd",
+        "58yJNafupMdEKyGgEppp1QVYGD8GF36i64",
+        "xvvQqxKxFVyk2HuPLaRJnmKw33EX1ohF62",
+        "JYWcSLDEYkwLnUzNPCAbbheCDgBX8UBoWz",
+        "qqjgkoip9uV7BCkrSJ6j4FeafzFF2c6U9b",
+        "EiL7qGeMFUL8gxDfmKTFBBybevAsabPjQs",
+        "6YX7BXbUFvz6TFFEeZiRNNFematw2Ndy7H",
+        "PoaSVBs78jvVYZhZws51qsPuSMoVzj7P2h",
+        "2LSofXm3o3gjubaWr9uLsZiVEHznid9nj2s",
+        "uW2h5AWA7fWXhWCSFe38Qt8ZfaAPxTCFdc",
+        "LKMcUWtkRAZ7RXpjcpw9r2m8wipf6bdzPx",
+        "2JNiM2pWip6azRUMrMEYWaU5mwjWAyPbB1B",
+        "29ssxDkFEYoim8fs5wMFBau2xwk5DojKDpb",
+        "2RSdPLfAmqBNg7WQtTAKzDzavKu9kTq7Kzb",
+        "nNBmjY1Mgvm9NzfR3f2RVNBGiHtCDh6CHy",
+        "2PvqrSzfK81rLwAMnzYoA7qa43ekBrch5c9",
+        "2UM2EYCTqxBNJGcccbDKmyGhshuggzP11dY",
+        "2S8FZ4geCbBfyxrMrkc71KVixFhvVjG4Frd",
+        "GnuLHQYrS6H4pD87tuFZ9bcGxbfeJdcLEx",
+        "2R1ogMmJ3qdm9asPTuPuzo4zQpttfHA1aaX",
+        "LVK3BWnGsy7Rs15uR5WJzawRyq3JkuxHmg",
+        "QAE88CYhRUuvSijqKNxodBWNBo61k7Yyra",
+        "uQNrnbfwPVeVEZRKizW9pXqpnr8g3TkaXU",
+        "2Me8ruE32ok73gRDbUKqHYGLTT3ua3z6Mmp",
+        "2cWx6ifxM7NWcekyswKwpQz91JaJ2rJAxPJ",
+        "4Szp47p8c2Rv4M9FJYqmz5V32TNn45YR1P",
+        "XsHSFqWP9554b7GLVE7R7RGyaWr3WqX9g8",
+        "ppLuAmsufVpGbNQfUzMJ2Hc51JkCX2tMK4",
+        "2JsFtN6Ysvb5mbmJkwzcLGXYzFHNQQtGpbu",
+        "2RJRox6aEEpZcorAzf43RBAjh3iatrNro75",
+        "txDFN3URsxgimLYR8ALFKRuiwiitnQpPEy",
+        "NvCXCndppZEYcx5GeEvT2cWurAsUCPZPDq",
+        "2Vvi7WSDGXVqLUcKLNzErfJ3koSywoWwzRy",
+        "rESHfZNaodMfdTdJdhzXnWapTdKR8FcPYR",
+        "2JKqDUcY6ptde4j2tRqJFRFvFSk3yPzEG8N",
+        "2ECZeVS9K2zebayY6f7K2vtgdmSTNrc2eFc",
+        "b5bgMPaoCRbLBNyaVVsk8ZC1RWeLGr5Gq9",
+        "7Z4WvHkGNAeQ3w2XEzFHgHAwTLTvDSvQ7Q",
+        "REsQgCEFkaQnxhesUwaadcFn36sKJPzsqF",
+        "dm31zSQ52nMGgxneSPUw2VfNe8EFkeLHZZ",
+        "YPDhXjEi2Fomw6gHWPTAdQhDRByTwGxV8x",
+        "K73AHZnivQbugR4BodRFL14dghcQ4WnF8n",
+        "KYABXLbraxs2njmptW3XJswAWDwCAQaH7N",
+        "2j8cwkGeaLJJbXycGAECa5NUN6wjEjnEh4U",
+        "8dV6ncpKLi6RoUN8HXZo5YL4QWftJc1Q9L",
+        "W1qrPh4dyQA4ZoHtqQTRk3mPY1aFPvUbHG",
+        "xAhKZud7ByNHApgSxiXeR3weG1iR4R6LFG",
+        "Fhw5ELwa1HZpbAo3UsqaCCRqd6qApJYvpN",
+        "2DTX8A49bW8MPo5576t6Hg9Nh9RGRKWLaXo",
+        "RQS9j2Mrf7uAz9hfdJc46N3Q8N2WNsHsbU",
+        "KzLooZtBMt1FwhvQ8kBPDUt98Z2CKwrHUV",
+        "2VWrxk1pV13LSuXczYNwbBc2dvZQSdg4S2b",
+        "21rJ2poqarhUNaUoTmLThiEmSxFWx22w9Ds",
+        "qnim7Sp76BCt7UV5dQDycVChauPwUFmf2M",
+        "2PotPMW64mg8kx1RtofCwqoZ8H4S3QDDv3T",
+        "2ZNxiKGfmWWUhv8BDxefqgxnbf8ap9mXyiJ",
+        "2hSzpZPrdqdkZeZBumGcBvCzRyqDY927WAw",
+        "21K6eJuS6V29LVAqo3WBcmjQT1zzHC8KHMt",
+        "s2brAnug39AM9CKDaUn1dtt2X3aczaFbwg",
+        "GmAxTjLGuqzaf4oTqZzQvmuhr6dww4c2ct",
+        "2AZNEk9LEW5kh2xDcKtjXfGQqc1LDxrTLcL",
+        "27a5s7BBmopXoNeHzjv5n3vtK55Mz4TQDwY",
+        "jbay7JcQkMTuid2pxiLtvCq8eh1h31rmWb",
+        "2WcTVoS3jGBAQkYHaQs9WJ295gyurM2dY4E",
+        "2GJBxPuvG7JvvGrLfwBNqgSTinYuWZtbXRx",
+        "2dfjoBbpt6eWVFwtFxNfXL4RhWg391feWSG",
+        "25pxfk5nyPHMFFsSMp5AESDW9gLPVeJTes6",
+        "2PsfV3WEwEi3436dXe22174f1YzCY4gaAAU",
+        "PvsdXzXmYjb7NiQkUKb3JMkcfMPodhw5z7",
+        "Rcixy3jNJ3pSNS8YsM1ktfoGHjwnZ78MrQ",
+        "DhVndspgugvY5QL8NiJLhNrxX1XukNNyqL",
+        "c9DH3m5uJV1NMPSS5EAyBSgAMW1YvciNLG",
+        "Q9p514badWQChhFc9oyn4VZ3HrfVj4rtxm",
+        "PW9utoNCh1PDpP2QZWKy95Q3WSHW9HBn51",
+        "Zr6NKwLNyYs93rsEsPwSvijZ1abHn5rfhQ",
+        "2mdxeXdQigw8sWKAJeVXnsxhxUnMNr5uoHe",
+        "256RG47K9RpbFoFKW7NJM8iHDbTLWS24Gf1",
+        "CzGPN5BEXSi8QEApXGYKb7Q5nxRstkc3xo",
+        "cu5SJKdMgTZ2HqZqGUCqePjsKuqZXwrxod",
+        "eLaHmMkJj5mqRB82ocwxR8n6FQYLbKqKkg",
+        "qyeDQXZXeNcc4dQup6qrDW2oHWLTpEv7Tn",
+        "6AGXcXBa8sztDEmvD3X6hRWVVdcBgZNgng",
+        "zgevaKxfdGBYzdLXsZTwG83UNiXpHpfp3m",
+        "QVxjqMRVVzMz6JRfqZUWRJ4yu5LTQZeaWj",
+        "LdPdEgtRcSDTFuVgDRguT8cD9XU4jgug5r",
+        "25kan7jcfLQtXMPV7Qx8Rwu558Hw8QVQHVn",
+        "7EobzC9YPKJyovinAb28sM8cMVQCY9ji2c",
+        "2QK5zXUoDqyAd6zX1WcvwDrfGwNnq2anQnJ",
+        "2VbhDRiNW4mJxU2wfyj7GR2ywRmC7xEYHUs",
+        "ppLjPCDXonLHhGZXna51GWtLXjvnfG5PeP",
+        "2FjHYQ9hTvxN8oXzvStqjZqA58s4FUQM6Gf",
+        "h1e51zqKSTYzFRagmAF1R81Wr4kVHB2u57",
+        "bGqjqCJdKqE3PrWGNnFrAQtap11XyRF3Jt",
+        "2fjEV5tJEsg2Ppxa9A8nY8mWi3ZHCZk893c"
     ]
 }
+```
+## Richlist show top N addresses by uxouts
+
+```
+URI: /richlist
+Method: GET
+Args:
+    n: top N addresses, [default 20, returns all if <= 0].
+    include-distribution: include distribution addresses or not, default false. 
+```
+
+example:
+
+```bash
+curl "http://127.0.0.1:8620/richlist?n=4&include-distribution=true"
+```
+
+result:
+
+```json
+    {
+        "address": "1JuMh1mhLwtf7NwTwtLu8vDdWzySY98d4F",
+        "coins": "10000000.000000",
+        "locked": true
+    },
+    {
+        "address": "21K6eJuS6V29LVAqo3WBcmjQT1zzHC8KHMt",
+        "coins": "10000000.000000",
+        "locked": true
+    },
+    {
+        "address": "21LtZErKQsucga7JQy2chAGBhVM1NQarUTR",
+        "coins": "10000000.000000",
+        "locked": true
+    },
+    {
+        "address": "21rJ2poqarhUNaUoTmLThiEmSxFWx22w9Ds",
+        "coins": "10000000.000000",
+        "locked": true
+    }
+]
+```
+
+## AddressCount show count of unique address
+
+```
+URI: /addresscount
+Method: GET
+```
+example:
+
+```bash
+curl "http://127.0.0.1:8620/addresscount"
+```
+
+result:
+
+```json
+{
+    "count": 2679
+}
+```
+
+## Wallet log api
+
+```sh
+URI: /logs
+Method: GET
+Args:
+    lines: how many lines to return,It is 1000 by default.
+    include: the word which must be included in log line.It's empty by default.
+    exclude: the word which must not be included in log line.It's empty by default.
+```
+
+example:
+
+```sh
+curl http://127.0.0.1:8620/logs?lines=1000
+```
+
+result:
+
+```json
+[
+    "[.gui:INFO] Starting web interface on http://127.0.0.1:8620",
+    "[.gui:WARNING] HTTPS not in use!",
+    "[.gui:INFO] Web resources directory: /Users/hanyouhong/go/src/github.com/spaco/spaco/src/gui/static/dist",
+    "[.webrpc:INFO] Start webrpc on http://127.0.0.1:6430",
+    "[.visor:INFO] Blockchain parser start",
+    "[.daemon:INFO] Connect to trusted peers",
+    "[.daemon:INFO] daemon.Pool listening on port 6000",
+    "[.gnet:INFO] Listening for connections on :6000...",
+    "[.daemon:DEBUG] Trying to connect to 121.41.103.148:6000",
+    "[.daemon:DEBUG] Trying to connect to 120.77.69.188:6000",
+    "[.daemon:DEBUG] Trying to connect to 47.88.33.156:6000",
+    "[.daemon:DEBUG] Trying to connect to 118.178.135.93:6000",
+    "[.gnet:DEBUG] Making TCP Connection to 118.178.135.93:6000",
+    "[.gnet:DEBUG] Making TCP Connection to 121.41.103.148:6000",
+    "[.gnet:DEBUG] Making TCP Connection to 47.88.33.156:6000",
+    "[.gnet:DEBUG] Making TCP Connection to 120.77.69.188:6000",
+    "[.daemon:INFO] Connected to peer: 121.41.103.148:6000 (outgoing)",
+    "[.daemon:DEBUG] Sending introduction message to 121.41.103.148:6000, mirror:1033754283",
+    "[.daemon:INFO] Connected to peer: 118.178.135.93:6000 (outgoing)",
+    "[.daemon:DEBUG] Sending introduction message to 118.178.135.93:6000, mirror:1033754283",
+    "[.daemon:INFO] Connected to peer: 120.77.69.188:6000 (outgoing)",
+    "[.daemon:DEBUG] Sending introduction message to 120.77.69.188:6000, mirror:1033754283",
+    "[.gnet:DEBUG] connection 118.178.135.93:6000 closed",
+    "[.daemon:INFO] 118.178.135.93:6000 disconnected because: read data failed: EOF",
+    "[.gnet:DEBUG] connection 121.41.103.148:6000 closed",
+    "[.daemon:INFO] 121.41.103.148:6000 disconnected because: read data failed: EOF",
+    "[.daemon:INFO] 120.77.69.188:6000 verified for version 2",
+    "[.pex:DEBUG] Reset retry times of 120.77.69.188:6000",
+    "[.daemon:DEBUG] Successfully requested blocks from 120.77.69.188:6000",
+    "[.daemon:DEBUG] Got 0 blocks since 4082",
+    "[.main:INFO] Launching System Browser with http://127.0.0.1:8620",
+    "[.daemon:CRITICAL] Added new block 4078",
+    "[.daemon:CRITICAL] Added new block 4079",
+    "[.daemon:CRITICAL] Added new block 4080",
+    "[.daemon:CRITICAL] Added new block 4081",
+    "[.daemon:CRITICAL] Added new block 4082"
+]
+```
+
+
+```sh
+curl http://127.0.0.1:8620/logs?lines=100&include=DEBUG
+```
+
+result:
+
+```json
+[
+    "[.daemon:DEBUG] Trying to connect to 118.178.135.93:6000",
+    "[.gnet:DEBUG] Making TCP Connection to 118.178.135.93:6000",
+    "[.daemon:DEBUG] Trying to connect to 121.41.103.148:6000",
+    "[.daemon:DEBUG] Trying to connect to 120.77.69.188:6000",
+    "[.daemon:DEBUG] Trying to connect to 47.88.33.156:6000",
+    "[.gnet:DEBUG] Making TCP Connection to 47.88.33.156:6000",
+    "[.gnet:DEBUG] Making TCP Connection to 121.41.103.148:6000",
+    "[.gnet:DEBUG] Making TCP Connection to 120.77.69.188:6000",
+    "[.daemon:DEBUG] Sending introduction message to 121.41.103.148:6000, mirror:1023099266",
+    "[.daemon:DEBUG] Sending introduction message to 118.178.135.93:6000, mirror:1023099266",
+    "[.daemon:DEBUG] Sending introduction message to 120.77.69.188:6000, mirror:1023099266",
+    "[.pex:DEBUG] Reset retry times of 121.41.103.148:6000",
+    "[.gnet:DEBUG] connection 121.41.103.148:6000 closed",
+    "[.gnet:DEBUG] connection 118.178.135.93:6000 closed",
+    "[.pex:DEBUG] Reset retry times of 120.77.69.188:6000",
+    "[.daemon:DEBUG] Successfully requested blocks from 120.77.69.188:6000",
+    "[.daemon:DEBUG] Got 0 blocks since 4083",
+    "[.daemon:DEBUG] Sending introduction message to 47.88.33.156:6000, mirror:1023099266",
+    "[.pex:DEBUG] Reset retry times of 47.88.33.156:6000",
+    "[.daemon:DEBUG] Successfully requested blocks from 47.88.33.156:6000",
+    "[.daemon:DEBUG] Got 0 blocks since 4083"
+]
+```
+
+```sh
+curl http://127.0.0.1:8620/logs?lines=100&include=DEBUG&exclude=ping
+```
+
+result:
+
+```json
+[
+     "[.pex:DEBUG] Increase retry times of 111.198.225.50:6000: 1",
+    "[.daemon:DEBUG] Failed to connect to 91.105.75.60:6000 with error: dial tcp 91.105.75.60:6000: i/o timeout",
+    "[.pex:DEBUG] Increase retry times of 91.105.75.60:6000: 1",
+    "[.daemon:DEBUG] Received pong from 117.48.197.46:6000",
+    "[.daemon:DEBUG] Received pong from 176.9.47.13:6000",
+    "[.daemon:DEBUG] Received pong from 139.162.33.154:6000",
+    "[.daemon:DEBUG] Reply to ping from 197.97.221.117:6000",
+    "[.daemon:DEBUG] Received pong from 197.97.221.117:6000",
+    "[.daemon:DEBUG] Received pong from 118.190.40.103:6000",
+    "[.daemon:DEBUG] Received pong from 47.88.33.156:6000",
+    "[.daemon:DEBUG] Received pong from 35.157.164.126:6000",
+    "[.daemon:DEBUG] Received pong from 178.62.225.38:6000",
+    "[.daemon:DEBUG] Received pong from 45.32.235.85:6000",
+]
 ```

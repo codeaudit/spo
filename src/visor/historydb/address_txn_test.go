@@ -5,10 +5,11 @@ import (
 	"testing"
 
 	"github.com/boltdb/bolt"
+	"github.com/stretchr/testify/require"
+
 	"github.com/spaco/spo/src/cipher"
 	"github.com/spaco/spo/src/cipher/encoder"
 	"github.com/spaco/spo/src/testutil"
-	"github.com/stretchr/testify/require"
 )
 
 func TestNewAddressTxns(t *testing.T) {

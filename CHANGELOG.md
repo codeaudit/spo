@@ -11,7 +11,45 @@ fix logo error
 
 ## [Unreleased]
 
-## [0.20.3] - 2017-11-16
+## [0.21.1] - 2017-12-14
+
+### Fixed
+
+- Fix blank page issue in windows gui wallet, which was caused by misusing the flag of -download-peers-list in electron.
+
+
+## [0.21.0] - 2017-12-10
+
+### Added
+
+- Require transactions to have an input with non-zero coinhours
+- Add `-peerlist-size` and `-max-outgoing-connections` CLI options
+- Add `-download-peerlist` and `-peerlist-url` CLI options, to get peers from a URL
+- For electron clients, download a list of peers from https://downloads.spaco.net/blockchain/peers.txt by default
+
+### Fixed
+
+- Fix change hours calculation. Previous gave 1/8 to change and destination addresses; now gives 1/4 to each
+- #653, the peerlist size was too small and could be easily filled up; default changed to 65535 from 1000
+
+### Changed
+
+- CLI's `walletBalance` and `addressBalance` commands return aggregate balances for confirmed, spendable and expected balances.  Coins are formatted as droplet strings.  Hours added as strings.
+- When splitting an odd number of hours in a spend, give the extra hour to the fee
+- Add `block_seq` to `get_outputs` and `/outputs` API response
+- Improve UxOut spend selection. Previously, they were spent oldest first. Now they are spent to ensure a non-zero coinhour input and otherwise minimize coinhours.
+- `create_rawtx` will try to minimize the number of UxOuts used to create a transaction.
+- `/wallet/spend` will try to maximize the number of UxOuts used to create a transaction.
+- Update the default peerlist size to 65535 from 1000
+- When loading a wallet, 100 addresses will be scanned ahead to find one with a balance
+
+## [0.20.4] - 2017-11-22
+
+### Added
+
+- Add  /logs api to filter spaco logs ,so that we can add a debug panel to the GUI wallet to show logs
+
+## [0.20.3] - 2017-10-23
 
 ### Fixed
 
@@ -70,8 +108,8 @@ fix logo error
 - All API and CLI methods with "coin"-related arguments must be a string and
   can use decimal notation to specify coin amounts.
 - CLI's `walletHistory` command prints amounts as fixed-point decimal strings.
-  Previously, it printed amounts as integers representing whole spo amounts,
-  and did not support droplets / fractional spos.
+  Previously, it printed amounts as integers representing whole spaco amounts,
+  and did not support droplets / fractional spacos.
 - A user is prevented from broadcasting a new transaction with unspent outputs
   that they have already sent as an unconfirmed transaction.
 
@@ -121,7 +159,7 @@ fix logo error
 - #421 Sort wallet transaction history by time
 - #398 Remove seeds from DOM
 - #390 Make `go test ./src/...` work
-- #383 Error during installation from spo source code
+- #383 Error during installation from spaco source code
 - #375 Node can't recovery from zero connections
 - #376 Explorer api `/explorer/address` does not return spend transactions
 - #373 Master node will be closed if there're no transactions need to execute
@@ -129,7 +167,10 @@ fix logo error
 - #350 Wallet name always 'undefined' after loading wallet from seed
 
 [Unreleased]: https://github.com/spaco/spo/compare/master...develop
-[0.20.1]: https://github.com/spaco/spo/compare/v0.20.2...v0.20.2
+[0.21.1]: https://github.com/spaco/spo/compare/v0.21.0...v0.21.1
+[0.20.4]: https://github.com/spaco/spo/compare/v0.20.3...v0.20.4
+[0.20.3]: https://github.com/spaco/spo/compare/v0.20.2...v0.20.3
+[0.20.2]: https://github.com/spaco/spo/compare/v0.20.1...v0.20.2
 [0.20.1]: https://github.com/spaco/spo/compare/v0.20.0...v0.20.1
 [0.20.0]: https://github.com/spaco/spo/compare/v0.19.1...v0.20.0
 [0.19.1]: https://github.com/spaco/spo/compare/v0.19.0...v0.19.1
