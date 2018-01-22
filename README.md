@@ -81,6 +81,13 @@ cd $GOPATH/src/github.com/spaco/spo
 make ARGS="--launch-browser=false" run
 ```
 
+### If you encounter any problems like empty page, compile static ui files again:
+
+```sh
+cd $GOPATH/src/github.com/spaco/spo/src/gui/static
+yarn & npm run build
+```
+
 ## API Documentation
 
 ### Wallet REST API
